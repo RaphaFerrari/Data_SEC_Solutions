@@ -5,12 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Raphael Ferrari · Data Solutions</title>
 
+  <script src="https://cdn.tailwindcss.com"></script>
+
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet" />
-
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://unpkg.com/lucide@latest"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
 
   <script>
     tailwind.config = {
@@ -18,12 +17,29 @@
       theme: {
         extend: {
           colors: {
-            navy: { DEFAULT: '#0B1527', 800: '#0d1c36', 700: '#102244', 600: '#163060', 500: '#1e4080' },
-            gold: { DEFAULT: '#c9a84c', light: '#e2c97e', dim: '#8a6f2f' },
+            brand: {
+              navy: '#0B1527',
+              surface: '#0d1c36',
+              surfaceElevated: '#102244',
+              gold: '#c9a84c',
+              goldLight: '#e2c97e',
+              slate: '#8fa3bf'
+            },
+            light: {
+              bg: '#F8FAFC',
+              surface: '#FFFFFF',
+              border: '#E2E8F0',
+              text: '#0F172A',
+              muted: '#64748B'
+            }
           },
           fontFamily: {
-            display: ['"Playfair Display"', 'serif'],
+            display: ['"Playfair Display"', 'Georgia', 'serif'],
             body: ['"DM Sans"', 'sans-serif'],
+          },
+          boxShadow: {
+            'glow': '0 0 20px rgba(201,168,76,0.3)',
+            'premium': '0 10px 40px -10px rgba(0,0,0,0.08)',
           }
         }
       }
@@ -31,364 +47,663 @@
   </script>
 
   <style>
-    :root { --transition-speed: 0.6s; --ease-premium: cubic-bezier(0.23, 1, 0.32, 1); }
+    /* ── Variáveis e Transições Base ───────────────────────────────── */
+    :root {
+      --ease-spring: cubic-bezier(0.25, 1, 0.5, 1);
+      --transition-slow: 0.5s;
+    }
     
-    body { transition: background-color var(--transition-speed) var(--ease-premium), color var(--transition-speed); }
+    body {
+      transition: background-color var(--transition-slow) var(--ease-spring), color var(--transition-slow);
+    }
 
-    /* Bento Grid Effects */
+    /* ── Noise Overlay (Discreto) ──────────────────────────────────── */
+    .noise-bg::before {
+      content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 50;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+      opacity: 0.8;
+    }
+    .light .noise-bg::before { opacity: 0.4; }
+
+    /* ── Bento Cards & Efeitos Premium ─────────────────────────────── */
     .bento-card {
       position: relative;
+      border-radius: 1.25rem;
+      transition: transform 0.4s var(--ease-spring), border-color 0.4s, box-shadow 0.4s;
       overflow: hidden;
-      transition: all 0.5s var(--ease-premium);
-      border: 1px solid rgba(201,168,76,0.1);
+      transform-style: preserve-3d;
+      will-change: transform;
     }
-    .dark .bento-card { background: rgba(13, 28, 54, 0.6); }
-    .light .bento-card { background: rgba(255, 255, 255, 0.9); border-color: rgba(15, 23, 42, 0.08); box-shadow: 0 10px 30px -10px rgba(0,0,0,0.05); }
 
+    /* Temas para os Cards */
+    .dark .bento-card {
+      background: rgba(13, 28, 54, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(12px);
+    }
+    .dark .bento-card:hover { border-color: rgba(201, 168, 76, 0.4); }
+
+    .light .bento-card {
+      background: #FFFFFF;
+      border: 1px solid #E2E8F0;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    }
+    .light .bento-card:hover {
+      border-color: #c9a84c;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Efeito de Mouse Glow (JS injecta as vars --x e --y) */
     .glow-overlay {
-      position: absolute; inset: 0; pointer-events: none; opacity: 0; transition: opacity 0.3s;
-      background: radial-gradient(circle at var(--x) var(--y), rgba(201, 168, 76, 0.15) 0%, transparent 50%);
+      position: absolute; inset: 0; pointer-events: none; opacity: 0;
+      transition: opacity 0.3s; z-index: 0;
     }
+    .dark .glow-overlay { background: radial-gradient(600px circle at var(--x, 50%) var(--y, 50%), rgba(201, 168, 76, 0.1), transparent 40%); }
+    .light .glow-overlay { background: radial-gradient(600px circle at var(--x, 50%) var(--y, 50%), rgba(201, 168, 76, 0.05), transparent 40%); }
     .bento-card:hover .glow-overlay { opacity: 1; }
-    .bento-card:hover { transform: translateY(-5px); border-color: rgba(201, 168, 76, 0.4); }
+    
+    .card-content { position: relative; z-index: 1; }
 
-    /* Animations */
-    .reveal { opacity: 0; transform: translateY(30px); transition: all 0.8s var(--ease-premium); }
+    /* ── Animações (Intersection Observer & Gráficos) ──────────────── */
+    .reveal { opacity: 0; transform: translateY(30px); transition: all 0.8s var(--ease-spring); }
     .reveal.visible { opacity: 1; transform: translateY(0); }
 
-    /* Custom Chart Animation from original */
-    .bar-anim { animation: barRise 1.6s var(--ease-premium) forwards; transform-origin: bottom; transform: scaleY(0); }
+    .bar-anim { animation: barRise 1.6s var(--ease-spring) forwards; transform-origin: bottom; transform: scaleY(0); }
     @keyframes barRise { to { transform: scaleY(1); } }
+    .line-draw { stroke-dasharray: 400; stroke-dashoffset: 400; animation: lineDraw 2s ease forwards 0.4s; }
+    @keyframes lineDraw { to { stroke-dashoffset: 0; } }
+    @keyframes pulse-green { 0%, 100% { box-shadow: 0 0 0 0 rgba(37,211,102,.5); } 50% { box-shadow: 0 0 0 6px rgba(37,211,102,0); } }
 
-    /* Theme Switcher */
-    #theme-icon { transition: transform 0.5s var(--ease-premium); }
-    .rotate-icon { transform: rotate(360deg); }
+    /* ── Tipografia e Linhas ───────────────────────────────────────── */
+    .gold-rule { display: inline-block; width: 48px; height: 2px; background: #c9a84c; border-radius: 2px; }
+    .gold-divider { height: 1px; background: linear-gradient(90deg, transparent, rgba(201,168,76,.4), transparent); }
 
-    .gold-rule { display: inline-block; width: 40px; height: 2px; background: #c9a84c; border-radius: 2px; }
+    /* ── Botão WA ──────────────────────────────────────────────────── */
+    .btn-wa {
+      display: inline-flex; align-items: center; justify-content: center; gap: 0.6rem;
+      background: #25D366; color: #fff; font-weight: 600; border-radius: 6px;
+      box-shadow: 0 4px 14px rgba(37,211,102,.3); transition: all 0.3s ease;
+    }
+    .btn-wa:hover { background: #1da851; transform: translateY(-2px); box-shadow: 0 6px 20px rgba(37,211,102,.4); }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 8px; }
+    .dark ::-webkit-scrollbar-track { background: #0B1527; }
+    .dark ::-webkit-scrollbar-thumb { background: rgba(201,168,76,.3); border-radius: 4px; }
+    .light ::-webkit-scrollbar-track { background: #F8FAFC; }
+    .light ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 4px; }
   </style>
 </head>
+<body class="noise-bg bg-light-bg dark:bg-brand-navy text-light-text dark:text-slate-200 font-body relative">
 
-<body class="bg-slate-50 dark:bg-navy text-slate-900 dark:text-slate-200 font-body antialiased">
-
-  <nav class="fixed top-0 w-full z-[100] backdrop-blur-xl border-b border-black/5 dark:border-white/5">
-    <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-      <a href="#" class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-navy-500 to-gold flex items-center justify-center">
-          <i data-lucide="shield-check" class="text-white w-6 h-6"></i>
-        </div>
-        <div class="leading-none">
-          <span class="block font-bold text-lg dark:text-white">Raphael Ferrari</span>
-          <span class="text-[10px] uppercase tracking-[0.2em] text-gold font-bold">DATA SOLUTIONS</span>
-        </div>
-      </a>
-
-      <div class="hidden md:flex items-center gap-8">
-        <a href="#solucoes" class="text-sm font-medium hover:text-gold transition-colors">Soluções</a>
-        <a href="#especialista" class="text-sm font-medium hover:text-gold transition-colors">Especialista</a>
-        <a href="#certificacoes" class="text-sm font-medium hover:text-gold transition-colors">Certificações</a>
-        
-        <button id="theme-toggle" class="p-2 rounded-full bg-black/5 dark:bg-white/5 hover:scale-110 transition-all" aria-label="Trocar Tema">
-          <i data-lucide="moon" id="theme-icon" class="w-5 h-5 text-navy-500 dark:text-gold"></i>
-        </button>
-
-        <a href="https://wa.me/5531993404537" target="_blank" class="px-6 py-2 bg-gold text-navy font-bold rounded-full text-sm hover:shadow-[0_0_20px_rgba(201,168,76,0.3)] transition-all">
-          Orçamento Gratuito
-        </a>
+<nav class="fixed top-0 w-full z-50 bg-white/80 dark:bg-brand-navy/90 backdrop-blur-md border-b border-light-border dark:border-white/5 transition-colors duration-500">
+  <div class="max-w-6xl mx-auto px-6 h-20 flex items-center justify-between">
+    
+    <a href="#" class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-lg flex items-center justify-center bg-gradient-to-br from-brand-surfaceElevated to-brand-gold shadow-md">
+        <svg viewBox="0 0 24 24" fill="none" class="w-5 h-5 text-white" xmlns="http://www.w3.org/2000/svg">
+          <path d="M3 18l4-8 4 4 4-6 4 5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="7" cy="10" r="1.5" fill="#c9a84c"/>
+          <circle cx="11" cy="14" r="1.5" fill="#c9a84c"/>
+          <circle cx="15" cy="8" r="1.5" fill="#c9a84c"/>
+          <circle cx="19" cy="13" r="1.5" fill="#c9a84c"/>
+        </svg>
       </div>
-    </div>
-  </nav>
+      <div class="leading-tight">
+        <span class="block font-bold text-sm text-light-text dark:text-white">Raphael Ferrari</span>
+        <span class="block text-[10px] uppercase font-bold tracking-[0.15em] text-brand-gold">Data Solutions</span>
+      </div>
+    </a>
 
-  <section class="relative min-h-screen flex items-center pt-20 overflow-hidden">
-    <div class="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-16 items-center relative z-10">
-      <div class="reveal">
+    <div class="hidden md:flex items-center gap-8">
+      <a href="#solucoes" class="text-sm font-medium text-light-muted dark:text-brand-slate hover:text-brand-gold dark:hover:text-white transition-colors">Soluções</a>
+      <a href="#especialista" class="text-sm font-medium text-light-muted dark:text-brand-slate hover:text-brand-gold dark:hover:text-white transition-colors">Especialista</a>
+      <a href="#certificacoes" class="text-sm font-medium text-light-muted dark:text-brand-slate hover:text-brand-gold dark:hover:text-white transition-colors">Certificações</a>
+      
+      <button id="theme-toggle" class="relative p-2 rounded-full hover:bg-slate-100 dark:hover:bg-white/10 transition-colors focus:outline-none" aria-label="Toggle Theme">
+        <svg id="icon-sun" class="w-5 h-5 text-brand-gold hidden dark:block" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+        <svg id="icon-moon" class="w-5 h-5 text-brand-surfaceElevated dark:hidden" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+      </button>
+
+      <a href="https://wa.me/5531993404537" target="_blank" class="btn-wa px-5 py-2.5 text-sm">
+        <svg viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        Orçamento Gratuito
+      </a>
+    </div>
+  </div>
+</nav>
+
+<section class="relative min-h-[90vh] flex items-center pt-24 pb-12 overflow-hidden">
+  <div class="absolute inset-0 z-0 hidden dark:block opacity-50" style="background: radial-gradient(ellipse 60% 60% at 10% 0%, rgba(30,64,128,.4) 0%, transparent 60%), radial-gradient(ellipse 50% 50% at 90% 20%, rgba(201,168,76,.1) 0%, transparent 55%), radial-gradient(ellipse 70% 80% at 50% 100%, rgba(14,40,90,.6) 0%, transparent 70%);"></div>
+
+  <div class="max-w-6xl mx-auto px-6 w-full relative z-10">
+    <div class="flex flex-col lg:flex-row items-center gap-16">
+      
+      <div class="flex-1 reveal">
         <div class="flex items-center gap-3 mb-6">
           <span class="gold-rule"></span>
-          <span class="text-xs font-bold tracking-widest uppercase text-gold">Sites · Dashboards · Segurança</span>
+          <span class="text-xs font-bold tracking-widest uppercase text-brand-gold">Sites · Dashboards · Segurança</span>
         </div>
-        <h1 class="font-display text-5xl lg:text-7xl font-black mb-6 leading-tight dark:text-white">
-          Decisões <span class="italic text-gold">inteligentes</span>,<br/>presença digital segura.
+
+        <h1 class="font-display text-light-text dark:text-white mb-6 leading-tight" style="font-size: clamp(2.4rem, 5vw, 4rem);">
+          Decisões <em class="text-brand-gold not-italic font-black">inteligentes</em>,<br/>
+          presença digital segura.
         </h1>
-        <p class="text-lg text-slate-600 dark:text-slate-400 mb-10 max-w-lg leading-relaxed">
-          Soluções completas para empresas que buscam crescer com clareza, controle e a confiança de um ambiente digital blindado.
+
+        <p class="text-light-muted dark:text-brand-slate text-lg mb-10 max-w-lg leading-relaxed">
+          Dashboards, segurança digital, processos documentados e web —
+          soluções completas para empresas que querem crescer com
+          <strong class="text-light-text dark:text-white font-semibold">clareza, controle e confiança.</strong>
         </p>
 
         <div class="flex flex-wrap gap-4 mb-12">
-          <a href="https://wa.me/5531993404537" class="px-8 py-4 bg-gold text-navy font-bold rounded-xl hover:scale-105 transition-all">Solicitar Diagnóstico</a>
-          <a href="#solucoes" class="px-8 py-4 border-2 border-slate-200 dark:border-white/10 font-bold rounded-xl hover:bg-slate-100 dark:hover:bg-white/5 transition-all">Conhecer Serviços</a>
+          <a href="https://wa.me/5531993404537" class="btn-wa px-7 py-3.5 text-base">Solicitar diagnóstico gratuito</a>
+          <a href="#solucoes" class="inline-flex items-center justify-center px-7 py-3.5 rounded-md border-2 border-brand-gold/50 text-brand-gold font-semibold hover:bg-brand-gold/10 transition-colors">
+            Ver soluções
+          </a>
         </div>
 
-        <div class="flex flex-wrap gap-6">
-          <div class="flex flex-col">
-            <span class="text-3xl font-display font-bold text-gold">+50</span>
-            <span class="text-xs text-slate-500 uppercase tracking-tighter">Projetos Entregues</span>
+        <div class="flex flex-wrap gap-4">
+          <div class="bento-card px-5 py-3 text-center border-none dark:border-solid dark:border-white/5 bg-white shadow-sm dark:bg-brand-surfaceElevated/50">
+            <span class="font-display text-2xl font-bold text-brand-gold block">+50</span>
+            <span class="text-xs text-light-muted dark:text-brand-slate">Projetos entregues</span>
           </div>
-          <div class="flex flex-col">
-            <span class="text-3xl font-display font-bold text-gold">6</span>
-            <span class="text-xs text-slate-500 uppercase tracking-tighter">Áreas de Atuação</span>
+          <div class="bento-card px-5 py-3 text-center border-none dark:border-solid dark:border-white/5 bg-white shadow-sm dark:bg-brand-surfaceElevated/50">
+            <span class="font-display text-2xl font-bold text-brand-gold block">6</span>
+            <span class="text-xs text-light-muted dark:text-brand-slate">Áreas de atuação</span>
           </div>
-          <div class="flex flex-col">
-            <span class="text-3xl font-display font-bold text-gold">100%</span>
-            <span class="text-xs text-slate-500 uppercase tracking-tighter">Foco no Resultado</span>
+          <div class="bento-card px-5 py-3 text-center border-none dark:border-solid dark:border-white/5 bg-white shadow-sm dark:bg-brand-surfaceElevated/50">
+            <span class="font-display text-2xl font-bold text-brand-gold block">100%</span>
+            <span class="text-xs text-light-muted dark:text-brand-slate">Foco no resultado</span>
           </div>
         </div>
       </div>
 
-      <div class="relative reveal delay-200">
-        <div class="bento-card rounded-3xl p-8 backdrop-blur-xl border-gold/20">
-          <div class="flex items-center justify-between mb-6">
-            <div>
-              <p class="text-[10px] text-slate-500 uppercase tracking-widest mb-1">Performance Semestral</p>
-              <p class="text-2xl font-display font-bold dark:text-white">R$ 2,4 M</p>
+      <div class="flex-1 w-full max-w-lg reveal" style="transition-delay: 0.2s;">
+        <div class="bento-card p-6 tilt-element">
+          <div class="glow-overlay"></div>
+          <div class="card-content">
+            <div class="flex items-center justify-between mb-4">
+              <div>
+                <p class="text-[10px] text-light-muted dark:text-brand-slate uppercase tracking-widest font-bold mb-1">Receita · Jan–Jun</p>
+                <p class="font-display text-2xl font-bold text-light-text dark:text-white">R$ 2,4 M</p>
+              </div>
+              <span class="px-3 py-1 rounded-full text-xs font-bold bg-green-100 text-green-700 dark:bg-green-500/15 dark:text-green-400">↑ 18,3 %</span>
             </div>
-            <span class="px-3 py-1 bg-emerald-500/10 text-emerald-500 text-xs font-bold rounded-full">↑ 18.3%</span>
-          </div>
-          
-          <svg viewBox="0 0 320 120" class="w-full mb-6">
-            <rect x="10" y="60" width="30" height="50" rx="3" fill="#1e4080" class="bar-anim" />
-            <rect x="60" y="45" width="30" height="65" rx="3" fill="#1e4080" class="bar-anim" style="animation-delay:0.1s" />
-            <rect x="110" y="30" width="30" height="80" rx="3" fill="#c9a84c" class="bar-anim" style="animation-delay:0.2s" />
-            <rect x="160" y="40" width="30" height="70" rx="3" fill="#1e4080" class="bar-anim" style="animation-delay:0.3s" />
-            <rect x="210" y="20" width="30" height="90" rx="3" fill="#c9a84c" class="bar-anim" style="animation-delay:0.4s" />
-            <rect x="260" y="10" width="30" height="100" rx="3" fill="#gold" class="bar-anim" style="animation-delay:0.5s" />
-          </svg>
 
-          <div class="grid grid-cols-3 gap-3">
-            <div class="p-3 bg-black/5 dark:bg-white/5 rounded-xl text-center">
-              <p class="text-[9px] text-slate-500 uppercase">Conversão</p>
-              <p class="text-sm font-bold">34,7%</p>
+            <svg viewBox="0 0 320 120" xmlns="http://www.w3.org/2000/svg" class="w-full mb-6">
+              <line x1="0" y1="30" x2="320" y2="30" stroke="currentColor" class="text-slate-200 dark:text-white/5" stroke-width="1"/>
+              <line x1="0" y1="60" x2="320" y2="60" stroke="currentColor" class="text-slate-200 dark:text-white/5" stroke-width="1"/>
+              <line x1="0" y1="90" x2="320" y2="90" stroke="currentColor" class="text-slate-200 dark:text-white/5" stroke-width="1"/>
+              
+              <rect x="12" y="60" width="30" height="50" rx="3" fill="#1e4080" class="bar-anim" style="animation-delay:.1s"/>
+              <rect x="62" y="45" width="30" height="65" rx="3" fill="#1e4080" class="bar-anim" style="animation-delay:.2s"/>
+              <rect x="112" y="30" width="30" height="80" rx="3" fill="#c9a84c" class="bar-anim" style="animation-delay:.3s; opacity: 0.8;"/>
+              <rect x="162" y="40" width="30" height="70" rx="3" fill="#1e4080" class="bar-anim" style="animation-delay:.4s"/>
+              <rect x="212" y="20" width="30" height="90" rx="3" fill="#c9a84c" class="bar-anim" style="animation-delay:.5s; opacity: 0.9;"/>
+              <rect x="262" y="10" width="30" height="100" rx="3" fill="#c9a84c" class="bar-anim" style="animation-delay:.6s"/>
+              
+              <polyline points="27,60 77,45 127,30 177,40 227,18 277,8" fill="none" stroke="#c9a84c" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="line-draw"/>
+            </svg>
+
+            <div class="grid grid-cols-3 gap-3">
+              <div class="rounded-lg p-3 text-center bg-slate-50 dark:bg-brand-navy/60 border border-slate-100 dark:border-white/5">
+                <p class="text-[10px] text-light-muted dark:text-brand-slate uppercase font-bold mb-1">Ticket</p>
+                <p class="text-light-text dark:text-white font-bold text-sm">R$ 4.820</p>
+              </div>
+              <div class="rounded-lg p-3 text-center bg-slate-50 dark:bg-brand-navy/60 border border-slate-100 dark:border-white/5">
+                <p class="text-[10px] text-light-muted dark:text-brand-slate uppercase font-bold mb-1">Conversão</p>
+                <p class="text-light-text dark:text-white font-bold text-sm">34,7 %</p>
+              </div>
+              <div class="rounded-lg p-3 text-center bg-slate-50 dark:bg-brand-navy/60 border border-brand-gold/30">
+                <p class="text-[10px] text-light-muted dark:text-brand-slate uppercase font-bold mb-1">NPS</p>
+                <p class="text-brand-gold font-bold text-sm">92 pts</p>
+              </div>
             </div>
-            <div class="p-3 bg-black/5 dark:bg-white/5 rounded-xl text-center">
-              <p class="text-[9px] text-slate-500 uppercase">Ticket</p>
-              <p class="text-sm font-bold">R$ 4.820</p>
-            </div>
-            <div class="p-3 bg-black/5 dark:bg-white/5 rounded-xl text-center border border-gold/30">
-              <p class="text-[9px] text-slate-500 uppercase">NPS</p>
-              <p class="text-sm font-bold text-gold">92 pts</p>
+
+            <div class="flex items-center justify-end gap-2 mt-4">
+              <span class="inline-block w-2 h-2 rounded-full bg-green-500" style="animation: pulse-green 1.5s infinite;"></span>
+              <span class="text-[10px] text-light-muted dark:text-brand-slate">Real-time sync</span>
             </div>
           </div>
         </div>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <section id="solucoes" class="py-24 bg-slate-100/50 dark:bg-navy-800/50">
-    <div class="max-w-7xl mx-auto px-6">
-      <div class="text-center mb-16 reveal">
-        <h2 class="font-display text-4xl lg:text-5xl font-black mb-4 dark:text-white">Especialidades Estratégicas</h2>
-        <p class="text-slate-500">Soluções integradas para empresas que não aceitam o comum.</p>
+<section id="solucoes" class="py-24 bg-slate-100/50 dark:bg-brand-surface/50 border-y border-slate-200 dark:border-white/5">
+  <div class="max-w-6xl mx-auto px-6">
+    <div class="text-center mb-16 reveal">
+      <div class="flex items-center justify-center gap-3 mb-4">
+        <span class="gold-rule"></span>
+        <span class="text-xs font-bold tracking-widest uppercase text-brand-gold">Soluções</span>
+        <span class="gold-rule"></span>
+      </div>
+      <h2 class="font-display text-4xl md:text-5xl font-black mb-4 text-light-text dark:text-white">
+        Arquitetura de <span class="text-brand-gold italic">Resultados</span>
+      </h2>
+      <p class="text-light-muted dark:text-brand-slate max-w-xl mx-auto text-lg">Foco primário em criação web, inteligência de dados e segurança, apoiado por infraestrutura robusta.</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      
+      <div class="bento-card p-8 md:col-span-1 reveal tilt-element">
+        <div class="glow-overlay"></div>
+        <div class="card-content">
+          <div class="w-12 h-12 rounded-xl border border-brand-gold/30 bg-brand-gold/10 flex items-center justify-center mb-6">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-6 h-6 text-brand-gold"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+          </div>
+          <h3 class="font-display text-2xl font-bold mb-3 text-light-text dark:text-white">Landing Pages que Convertem</h3>
+          <p class="text-sm text-light-muted dark:text-brand-slate mb-4">Páginas profissionais e responsivas. Design moderno e código limpo focado em conversão para lançamentos e negócios locais.</p>
+        </div>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="bento-card p-8 md:col-span-1 reveal tilt-element" style="transition-delay: 0.1s;">
+        <div class="glow-overlay"></div>
+        <div class="card-content">
+          <div class="w-12 h-12 rounded-xl border border-brand-gold/30 bg-brand-gold/10 flex items-center justify-center mb-6">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-6 h-6 text-brand-gold"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"></path></svg>
+          </div>
+          <h3 class="font-display text-2xl font-bold mb-3 text-light-text dark:text-white">Dashboards no Looker Studio</h3>
+          <p class="text-sm text-light-muted dark:text-brand-slate mb-4">Painéis interativos para C-Level com atualização automática. KPIs e metas em tempo real sem a necessidade de instalar nada.</p>
+        </div>
+      </div>
+
+      <div class="bento-card p-8 md:col-span-1 reveal tilt-element" style="transition-delay: 0.2s;">
+        <div class="glow-overlay"></div>
+        <div class="card-content">
+          <div class="w-12 h-12 rounded-xl border border-brand-gold/30 bg-brand-gold/10 flex items-center justify-center mb-6">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-6 h-6 text-brand-gold"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+          </div>
+          <h3 class="font-display text-2xl font-bold mb-3 text-light-text dark:text-white">Segurança Digital & LGPD</h3>
+          <p class="text-sm text-light-muted dark:text-brand-slate mb-4">Auditoria objetiva de segurança, gestão de acessos e blindagem de dados focada em PMEs, sem jargões técnicos confusos.</p>
+        </div>
+      </div>
+
+      <div class="bento-card p-6 md:col-span-1 reveal tilt-element">
+        <div class="glow-overlay"></div>
+        <div class="card-content flex items-center gap-4">
+          <div class="p-3 rounded-lg bg-slate-100 dark:bg-white/5 text-light-text dark:text-white"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg></div>
+          <div>
+            <h4 class="font-bold text-light-text dark:text-white">Integração de APIs</h4>
+            <p class="text-xs text-light-muted dark:text-brand-slate mt-1">Conexão REST/Webhooks p/ CRM e ERP.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="bento-card p-6 md:col-span-1 reveal tilt-element" style="transition-delay: 0.1s;">
+        <div class="glow-overlay"></div>
+        <div class="card-content flex items-center gap-4">
+          <div class="p-3 rounded-lg bg-slate-100 dark:bg-white/5 text-light-text dark:text-white"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path></svg></div>
+          <div>
+            <h4 class="font-bold text-light-text dark:text-white">Banco de Dados</h4>
+            <p class="text-xs text-light-muted dark:text-brand-slate mt-1">SQL, BigQuery, MySQL, PostgreSQL.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="bento-card p-6 md:col-span-1 reveal tilt-element" style="transition-delay: 0.2s;">
+        <div class="glow-overlay"></div>
+        <div class="card-content flex items-center gap-4">
+          <div class="p-3 rounded-lg bg-slate-100 dark:bg-white/5 text-light-text dark:text-white"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg></div>
+          <div>
+            <h4 class="font-bold text-light-text dark:text-white">Mapeamento BPMN</h4>
+            <p class="text-xs text-light-muted dark:text-brand-slate mt-1">Desenho de POPs e Fluxogramas AS-IS/TO-BE.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section id="especialista" class="py-24">
+  <div class="max-w-5xl mx-auto px-6">
+    <div class="flex flex-col lg:flex-row items-center gap-14">
+      
+      <div class="flex-shrink-0 reveal">
+        <div class="relative">
+          <div class="w-44 h-44 md:w-56 md:h-56 rounded-full flex items-center justify-center bg-gradient-to-br from-brand-surfaceElevated to-brand-navy border-2 border-brand-gold/30 shadow-premium">
+            <div class="text-center">
+              <div class="font-display text-5xl font-bold text-brand-gold">RF</div>
+              <div class="text-xs text-brand-slate mt-1 tracking-widest uppercase">Data Expert</div>
+            </div>
+          </div>
+          <div class="absolute -bottom-2 -right-2 w-12 h-12 rounded-full flex items-center justify-center bg-green-500 shadow-lg border-4 border-white dark:border-brand-navy">
+            <svg viewBox="0 0 24 24" fill="white" class="w-6 h-6"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex-1 reveal" style="transition-delay: 0.2s;">
+        <div class="flex items-center gap-3 mb-4">
+          <span class="gold-rule"></span>
+          <span class="text-xs font-bold tracking-widest uppercase text-brand-gold">Sobre o Especialista</span>
+        </div>
+
+        <h2 class="font-display text-3xl md:text-4xl mb-6 text-light-text dark:text-white font-black">
+          Dados são só números.<br/><em class="text-brand-gold not-italic">O que importa é a decisão.</em>
+        </h2>
+
+        <div class="text-light-muted dark:text-brand-slate space-y-4 text-base leading-relaxed">
+          <p>Sou <strong class="text-light-text dark:text-white">Raphael Ferrari</strong>, profissional com atuação em <strong class="text-light-text dark:text-white">Inteligência de Dados, Segurança da Informação, Mapeamento de Processos e Desenvolvimento Web</strong>. Essa combinação multidisciplinar — visão técnica aliada ao entendimento de como as empresas realmente funcionam — é o que garante entregas que geram resultado, não apenas relatórios.</p>
+          <p>Cada projeto começa com um diagnóstico honesto das necessidades do cliente e termina com <strong class="text-light-text dark:text-white">acompanhamento e suporte</strong> até a solução estar operando de forma autônoma. Sem achismos, sem entrega e abandono.</p>
+        </div>
+
+        <div class="mt-8 p-5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-brand-surfaceElevated/50">
+          <p class="text-[10px] font-bold tracking-widest uppercase text-brand-gold mb-4">Formação Acadêmica</p>
+          <div class="space-y-3">
+            <div class="flex items-start gap-3">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-5 h-5 text-brand-gold mt-0.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 14l9-5-9-5-9 5 9 5z"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 14l6.16-3.422A12.083 12.083 0 0121 21H3a12.083 12.083 0 012.84-10.422L12 14z"/></svg>
+              <div>
+                <p class="text-sm font-bold text-light-text dark:text-white">Graduação em Segurança da Informação</p>
+                <p class="text-xs text-light-muted dark:text-brand-slate">Faculdade Uninter</p>
+              </div>
+            </div>
+            <div class="flex items-start gap-3">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-5 h-5 text-brand-gold mt-0.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 14l9-5-9-5-9 5 9 5z"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 14l6.16-3.422A12.083 12.083 0 0121 21H3a12.083 12.083 0 012.84-10.422L12 14z"/></svg>
+              <div>
+                <p class="text-sm font-bold text-light-text dark:text-white">Pós-Graduação em Redes e Cibersegurança <span class="font-normal text-brand-gold text-[10px] ml-1">· Cursando</span></p>
+                <p class="text-xs text-light-muted dark:text-brand-slate">Faculdade Hackone</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section id="certificacoes" class="py-24 bg-slate-50 dark:bg-brand-surface border-y border-slate-200 dark:border-white/5">
+  <div class="max-w-6xl mx-auto px-6">
+
+    <div class="text-center mb-16 reveal">
+      <h2 class="font-display text-4xl md:text-5xl font-black text-light-text dark:text-white">Conhecimento Comprovado</h2>
+    </div>
+
+    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      
+      <div class="bento-card p-6 reveal tilt-element">
+        <svg viewBox="0 0 24 24" fill="none" class="w-8 h-8 mb-4"><path d="M12 2L3 7v5c0 5.25 4.5 9.74 9 11 4.5-1.26 9-5.75 9-11V7L12 2z" stroke="#ee441c" stroke-width="2" stroke-linejoin="round"/></svg>
+        <p class="text-light-text dark:text-white text-base font-bold leading-tight mb-2">Fortinet Certified Fundamentals</p>
+        <p class="text-light-muted dark:text-brand-slate text-[10px] uppercase mb-4 font-semibold">FCF · FEV/2026</p>
+        <span class="inline-block px-3 py-1 bg-red-500/10 text-red-500 text-[10px] font-bold rounded-md">Válido até 2028</span>
+      </div>
+
+      <div class="bento-card p-6 reveal tilt-element" style="transition-delay: 0.1s;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#4285F4" stroke-width="2" class="w-8 h-8 mb-4"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+        <p class="text-light-text dark:text-white text-base font-bold leading-tight mb-2">Google Cybersecurity</p>
+        <p class="text-light-muted dark:text-brand-slate text-[10px] uppercase mb-4 font-semibold">PROFESSIONAL · JAN/2026</p>
+        <span class="inline-block px-3 py-1 bg-blue-500/10 text-blue-500 text-[10px] font-bold rounded-md">Coursera</span>
+      </div>
+
+      <div class="bento-card p-6 reveal tilt-element" style="transition-delay: 0.2s;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#8854ff" stroke-width="2" class="w-8 h-8 mb-4"><path stroke-linecap="round" stroke-linejoin="round" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+        <p class="text-light-text dark:text-white text-base font-bold leading-tight mb-2">Pre Security Certificate</p>
+        <p class="text-light-muted dark:text-brand-slate text-[10px] uppercase mb-4 font-semibold">TRYHACKME · NOV/2025</p>
+        <span class="inline-block px-3 py-1 bg-purple-500/10 text-purple-500 text-[10px] font-bold rounded-md">Válido até 2028</span>
+      </div>
+
+      <div class="bento-card p-6 reveal tilt-element" style="transition-delay: 0.3s;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#c9a84c" stroke-width="2" class="w-8 h-8 mb-4"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+        <p class="text-light-text dark:text-white text-base font-bold leading-tight mb-2">Formação Looker Studio</p>
+        <p class="text-light-muted dark:text-brand-slate text-[10px] uppercase mb-4 font-semibold">ALURA · ABR/2024</p>
+        <span class="inline-block px-3 py-1 bg-yellow-600/10 text-yellow-600 dark:text-brand-gold text-[10px] font-bold rounded-md">Data Analytics</span>
+      </div>
+
+    </div>
+
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 reveal" style="transition-delay: 0.4s;">
+      
+      <div class="bento-card p-4 text-center">
+        <p class="text-light-text dark:text-white text-xs font-bold mb-1">Cisco Cybersecurity</p>
+        <p class="text-light-muted dark:text-brand-slate text-[10px]">dez/2024</p>
+      </div>
+      <div class="bento-card p-4 text-center">
+        <p class="text-light-text dark:text-white text-xs font-bold mb-1">FIAP Cybersecurity</p>
+        <p class="text-light-muted dark:text-brand-slate text-[10px]">mai/2025</p>
+      </div>
+      <div class="bento-card p-4 text-center">
+        <p class="text-light-text dark:text-white text-xs font-bold mb-1">Bradesco LGPD</p>
+        <p class="text-light-muted dark:text-brand-slate text-[10px]">abr/2024</p>
+      </div>
+      <div class="bento-card p-4 text-center">
+        <p class="text-light-text dark:text-white text-xs font-bold mb-1">Data Science Academy</p>
+        <p class="text-light-muted dark:text-brand-slate text-[10px]">Ciência de Dados</p>
+      </div>
+      <div class="bento-card p-4 text-center">
+        <p class="text-light-text dark:text-white text-xs font-bold mb-1">SAP Activate</p>
+        <p class="text-light-muted dark:text-brand-slate text-[10px]">Alura · jul/2024</p>
+      </div>
+      <div class="bento-card p-4 text-center">
+        <p class="text-light-text dark:text-white text-xs font-bold mb-1">Blip Academy IA</p>
+        <p class="text-light-muted dark:text-brand-slate text-[10px]">mar/2025</p>
+      </div>
+
+      <div class="bento-card p-4 text-center hidden lg:block">
+        <p class="text-light-text dark:text-white text-xs font-bold mb-1">Cisco Endpoint Sec.</p>
+        <p class="text-light-muted dark:text-brand-slate text-[10px]">set/2024</p>
+      </div>
+      <div class="bento-card p-4 text-center hidden lg:block">
+        <p class="text-light-text dark:text-white text-xs font-bold mb-1">SQL & SQLite</p>
+        <p class="text-light-muted dark:text-brand-slate text-[10px]">Alura · mar/2024</p>
+      </div>
+      <div class="bento-card p-4 text-center hidden lg:block">
+        <p class="text-light-text dark:text-white text-xs font-bold mb-1">Infra TI</p>
+        <p class="text-light-muted dark:text-brand-slate text-[10px]">FIAP · dez/2022</p>
+      </div>
+      <div class="bento-card p-4 text-center hidden lg:block">
+        <p class="text-light-text dark:text-white text-xs font-bold mb-1">SAP Geral</p>
+        <p class="text-light-muted dark:text-brand-slate text-[10px]">Alura · jul/2024</p>
+      </div>
+      <div class="bento-card p-4 text-center hidden lg:block">
+        <p class="text-light-text dark:text-white text-xs font-bold mb-1">Looker Studio</p>
+        <p class="text-light-muted dark:text-brand-slate text-[10px]">Alura · abr/2024</p>
+      </div>
+      <div class="bento-card p-4 text-center hidden lg:block">
+        <p class="text-light-text dark:text-white text-xs font-bold mb-1">Lógica Prog.</p>
+        <p class="text-light-muted dark:text-brand-slate text-[10px]">Certificate</p>
+      </div>
+
+    </div>
+
+  </div>
+</section>
+
+<section class="py-24 bg-white dark:bg-[#070f1e]">
+  <div class="max-w-6xl mx-auto px-6 text-center">
+    
+    <div class="flex items-center justify-center gap-3 mb-4 reveal">
+      <span class="gold-rule"></span>
+      <span class="text-xs font-bold tracking-widest uppercase text-brand-gold">Como Funciona</span>
+      <span class="gold-rule"></span>
+    </div>
+    
+    <h2 class="font-display text-4xl md:text-5xl font-black mb-20 text-light-text dark:text-white reveal">
+      Do primeiro contato à <em class="text-brand-gold not-italic">entrega com resultado</em>
+    </h2>
+
+    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
+      
+      <div class="reveal tilt-element relative">
+        <div class="w-16 h-16 rounded-full mx-auto mb-6 flex items-center justify-center bg-gradient-to-b from-brand-surfaceElevated to-brand-gold shadow-lg relative z-10 border-2 border-white dark:border-brand-navy">
+          <span class="font-display text-2xl font-bold text-white">1</span>
+        </div>
+        <h4 class="text-light-text dark:text-white font-bold mb-3 text-lg">Diagnóstico</h4>
+        <p class="text-light-muted dark:text-brand-slate text-sm leading-relaxed max-w-xs mx-auto">Conversa inicial para entender seu negócio, dores e objetivos — sem jargão técnico.</p>
+      </div>
+
+      <div class="reveal tilt-element relative" style="transition-delay: 0.1s;">
+        <div class="w-16 h-16 rounded-full mx-auto mb-6 flex items-center justify-center bg-gradient-to-b from-brand-surfaceElevated to-brand-gold shadow-lg relative z-10 border-2 border-white dark:border-brand-navy">
+          <span class="font-display text-2xl font-bold text-white">2</span>
+        </div>
+        <h4 class="text-light-text dark:text-white font-bold mb-3 text-lg">Proposta</h4>
+        <p class="text-light-muted dark:text-brand-slate text-sm leading-relaxed max-w-xs mx-auto">Solução personalizada com escopo, prazo e investimento claros — sem surpresas.</p>
+      </div>
+
+      <div class="reveal tilt-element relative" style="transition-delay: 0.2s;">
+        <div class="w-16 h-16 rounded-full mx-auto mb-6 flex items-center justify-center bg-gradient-to-b from-brand-surfaceElevated to-brand-gold shadow-lg relative z-10 border-2 border-white dark:border-brand-navy">
+          <span class="font-display text-2xl font-bold text-white">3</span>
+        </div>
+        <h4 class="text-light-text dark:text-white font-bold mb-3 text-lg">Desenvolvimento</h4>
+        <p class="text-light-muted dark:text-brand-slate text-sm leading-relaxed max-w-xs mx-auto">Execução com atualizações frequentes e espaço para ajustes ao longo do caminho.</p>
+      </div>
+
+      <div class="reveal tilt-element relative" style="transition-delay: 0.3s;">
+        <div class="w-16 h-16 rounded-full mx-auto mb-6 flex items-center justify-center bg-gradient-to-b from-brand-surfaceElevated to-brand-gold shadow-lg relative z-10 border-2 border-white dark:border-brand-navy">
+          <span class="font-display text-2xl font-bold text-white">4</span>
+        </div>
+        <h4 class="text-light-text dark:text-white font-bold mb-3 text-lg">Entrega & Suporte</h4>
+        <p class="text-light-muted dark:text-brand-slate text-sm leading-relaxed max-w-xs mx-auto">Acompanhamento pós-entrega para garantir que a solução funciona de forma autônoma.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section class="py-24 bg-brand-surfaceElevated dark:bg-brand-navy">
+  <div class="max-w-4xl mx-auto px-6 text-center reveal">
+    <p class="text-[10px] font-bold tracking-widest uppercase text-brand-gold mb-4">PRONTO PARA COMEÇAR?</p>
+    
+    <h2 class="font-display text-4xl md:text-5xl lg:text-6xl text-white font-black leading-tight mb-8">
+      Seu negócio merece<br/>
+      <em class="text-brand-gold font-bold italic">soluções que funcionam de verdade.</em>
+    </h2>
+    
+    <p class="text-brand-slate text-lg mb-10 max-w-2xl mx-auto">
+      Entre em contato agora e receba um diagnóstico gratuito — seja para dados, segurança, processos ou presença digital. A primeira conversa é sempre sem compromisso.
+    </p>
+    
+    <a href="https://wa.me/5531993404537" target="_blank" class="btn-wa px-8 py-4 text-lg mx-auto inline-flex shadow-xl shadow-green-500/20">
+      <svg viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      Falar com Raphael agora
+    </a>
+    
+    <div class="mt-6 flex items-center justify-center gap-2 text-xs text-brand-slate">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-4 h-4"><circle cx="12" cy="12" r="10"/><path stroke-linecap="round" d="M12 6v6l4 2"/></svg>
+      Resposta em até 1h durante o horário comercial
+    </div>
+  </div>
+</section>
+
+<footer id="contato" class="bg-white dark:bg-[#070f1e] border-t border-slate-200 dark:border-white/5">
+  <div class="max-w-6xl mx-auto px-6 py-14">
+    <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-10">
+      
+      <div>
+        <div class="flex items-center gap-3 mb-3">
+          <div class="w-9 h-9 rounded flex items-center justify-center bg-gradient-to-br from-brand-surfaceElevated to-brand-gold">
+            <svg viewBox="0 0 24 24" fill="none" class="w-5 h-5 text-white" xmlns="http://www.w3.org/2000/svg"><path d="M3 18l4-8 4 4 4-6 4 5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="7" cy="10" r="1.5" fill="#c9a84c"/><circle cx="11" cy="14" r="1.5" fill="#c9a84c"/><circle cx="15" cy="8" r="1.5" fill="#c9a84c"/><circle cx="19" cy="13" r="1.5" fill="#c9a84c"/></svg>
+          </div>
+          <div>
+            <span class="block font-bold text-sm text-light-text dark:text-white">Raphael Ferrari</span>
+            <span class="block text-[10px] uppercase font-bold text-brand-gold tracking-[0.15em]">Data Solutions</span>
+          </div>
+        </div>
+        <p class="text-light-muted dark:text-brand-slate text-sm max-w-xs leading-relaxed">
+          Dados, segurança, processos e web — soluções sob medida para empresas que querem crescer com clareza e controle.
+        </p>
+      </div>
+
+      <div class="space-y-4">
+        <p class="text-[10px] text-light-muted dark:text-brand-slate uppercase font-bold tracking-widest mb-4">Contato</p>
         
-        <div class="bento-card rounded-3xl p-8 reveal">
-          <div class="glow-overlay"></div>
-          <div class="w-12 h-12 rounded-2xl bg-gold/10 flex items-center justify-center mb-6">
-            <i data-lucide="layout" class="text-gold"></i>
+        <a href="https://wa.me/5531993404537" class="flex items-center gap-3 group no-underline">
+          <div class="w-10 h-10 rounded-lg flex items-center justify-center bg-green-100 dark:bg-green-500/10 group-hover:bg-green-200 transition-colors">
+            <svg viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5 text-green-600 dark:text-green-500"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
           </div>
-          <h3 class="text-2xl font-bold mb-4 dark:text-white text-navy">Landing Pages de Alta Conversão</h3>
-          <p class="text-sm text-slate-500 leading-relaxed mb-6">Páginas profissionais, responsivas e otimizadas com foco total no seu objetivo de negócio. Design moderno e código limpo.</p>
-          <ul class="space-y-2 text-xs text-slate-400 font-medium">
-            <li class="flex items-center gap-2"><i data-lucide="check" class="w-3 h-3 text-gold"></i> Mobile-first & SEO</li>
-            <li class="flex items-center gap-2"><i data-lucide="check" class="w-3 h-3 text-gold"></i> Foco em Lançamentos & PMEs</li>
-          </ul>
-        </div>
-
-        <div class="bento-card rounded-3xl p-8 reveal delay-100 border-gold/30">
-          <div class="glow-overlay"></div>
-          <div class="w-12 h-12 rounded-2xl bg-gold/10 flex items-center justify-center mb-6">
-            <i data-lucide="pie-chart" class="text-gold"></i>
+          <div>
+            <p class="text-[10px] text-light-muted dark:text-brand-slate uppercase font-bold">WhatsApp</p>
+            <p class="text-light-text dark:text-white font-bold text-sm">(31) 99340-4537</p>
           </div>
-          <h3 class="text-2xl font-bold mb-4 dark:text-white text-navy">Dashboards no Looker Studio</h3>
-          <p class="text-sm text-slate-500 leading-relaxed mb-6">Painéis interativos integrados ao Sheets e BigQuery, com atualização automática para todos os níveis hierárquicos.</p>
-          <ul class="space-y-2 text-xs text-slate-400 font-medium">
-            <li class="flex items-center gap-2"><i data-lucide="check" class="w-3 h-3 text-gold"></i> KPIs e Metas em tempo real</li>
-            <li class="flex items-center gap-2"><i data-lucide="check" class="w-3 h-3 text-gold"></i> Relatórios via e-mail</li>
-          </ul>
-        </div>
-
-        <div class="bento-card rounded-3xl p-8 reveal delay-200">
-          <div class="glow-overlay"></div>
-          <div class="w-12 h-12 rounded-2xl bg-gold/10 flex items-center justify-center mb-6">
-            <i data-lucide="shield-check" class="text-gold"></i>
-          </div>
-          <h3 class="text-2xl font-bold mb-4 dark:text-white text-navy">Segurança da Informação</h3>
-          <p class="text-sm text-slate-500 leading-relaxed mb-6">Consultoria prática e diagnóstico de vulnerabilidades para proteger dados, acessos e a reputação da sua empresa.</p>
-          <ul class="space-y-2 text-xs text-slate-400 font-medium">
-            <li class="flex items-center gap-2"><i data-lucide="check" class="w-3 h-3 text-gold"></i> Proteção LGPD</li>
-            <li class="flex items-center gap-2"><i data-lucide="check" class="w-3 h-3 text-gold"></i> Gestão de Senhas e Acessos</li>
-          </ul>
-        </div>
-
-      </div>
-    </div>
-  </section>
-
-  <section id="especialista" class="py-24">
-    <div class="max-w-5xl mx-auto px-6">
-      <div class="flex flex-col lg:flex-row items-center gap-16">
-        <div class="relative reveal flex-shrink-0">
-          <div class="w-48 h-48 lg:w-64 lg:h-64 rounded-full border-2 border-gold/30 p-2">
-            <div class="w-full h-full rounded-full bg-navy-700 flex items-center justify-center text-5xl font-display font-bold text-gold">RF</div>
-          </div>
-          <div class="absolute bottom-4 right-4 bg-emerald-500 p-3 rounded-full text-white shadow-xl">
-            <i data-lucide="verified" class="w-6 h-6"></i>
-          </div>
-        </div>
-        <div class="reveal delay-200">
-          <h2 class="font-display text-3xl lg:text-5xl font-black mb-6 dark:text-white leading-tight">Dados são só números.<br/><span class="text-gold">O que importa é a decisão.</span></h2>
-          <div class="space-y-4 text-slate-600 dark:text-slate-400 text-lg leading-relaxed">
-            <p>Sou <strong>Raphael Ferrari</strong>, profissional com atuação em <strong>Inteligência de Dados, Segurança da Informação, Mapeamento de Processos e Desenvolvimento Web</strong>.</p>
-            <p>Essa combinação multidisciplinar — visão técnica aliada ao entendimento de como as empresas realmente funcionam — é o que garante entregas que geram resultado, não apenas relatórios.</p>
-          </div>
-          
-          <div class="mt-8 p-6 rounded-2xl bg-black/5 dark:bg-white/5 border border-gold/10">
-            <h4 class="text-xs font-bold uppercase tracking-widest text-gold mb-4">Formação Acadêmica</h4>
-            <ul class="space-y-3">
-              <li class="flex items-center gap-3 text-sm">
-                <i data-lucide="graduation-cap" class="text-gold w-5 h-5"></i>
-                <span class="dark:text-white">Graduação em Segurança da Informação — <span class="text-slate-500">Uninter</span></span>
-              </li>
-              <li class="flex items-center gap-3 text-sm">
-                <i data-lucide="graduation-cap" class="text-gold w-5 h-5"></i>
-                <span class="dark:text-white">Pós-Graduação em Redes e Cibersegurança — <span class="text-gold-dim">Hackone (Cursando)</span></span>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section id="certificacoes" class="py-24 bg-slate-100/50 dark:bg-navy-900/50">
-    <div class="max-w-7xl mx-auto px-6">
-      <div class="text-center mb-16 reveal">
-        <h2 class="font-display text-4xl font-black dark:text-white">Conhecimento Comprovado</h2>
-      </div>
-
-      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
-        <div class="bento-card p-6 rounded-2xl reveal">
-          <i data-lucide="shield" class="text-red-500 mb-4"></i>
-          <p class="font-bold text-sm mb-1">Fortinet Certified Fundamentals</p>
-          <p class="text-[10px] text-slate-500 mb-3 uppercase">FCF · fev/2026</p>
-          <span class="text-[10px] bg-red-500/10 text-red-500 px-2 py-1 rounded">Válido até 2028</span>
-        </div>
-        <div class="bento-card p-6 rounded-2xl reveal delay-75">
-          <i data-lucide="badge-check" class="text-blue-500 mb-4"></i>
-          <p class="font-bold text-sm mb-1">Google Cybersecurity</p>
-          <p class="text-[10px] text-slate-500 mb-3 uppercase">Professional · jan/2026</p>
-          <span class="text-[10px] bg-blue-500/10 text-blue-500 px-2 py-1 rounded">Coursera</span>
-        </div>
-        <div class="bento-card p-6 rounded-2xl reveal delay-150">
-          <i data-lucide="terminal" class="text-purple-500 mb-4"></i>
-          <p class="font-bold text-sm mb-1">Pre Security Certificate</p>
-          <p class="text-[10px] text-slate-500 mb-3 uppercase">TryHackMe · nov/2025</p>
-          <span class="text-[10px] bg-purple-500/10 text-purple-500 px-2 py-1 rounded">Válido até 2028</span>
-        </div>
-        <div class="bento-card p-6 rounded-2xl reveal delay-225">
-          <i data-lucide="bar-chart-3" class="text-gold mb-4"></i>
-          <p class="font-bold text-sm mb-1">Formação Looker Studio</p>
-          <p class="text-[10px] text-slate-500 mb-3 uppercase">Alura · abr/2024</p>
-          <span class="text-[10px] bg-gold/10 text-gold px-2 py-1 rounded">Data Analytics</span>
-        </div>
-      </div>
-
-      <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 reveal">
-        <div class="p-4 bg-white dark:bg-white/5 rounded-xl text-center border border-black/5">
-          <p class="text-[10px] font-bold">Cisco Cybersecurity</p>
-          <p class="text-[8px] text-slate-500">dez/2024</p>
-        </div>
-        <div class="p-4 bg-white dark:bg-white/5 rounded-xl text-center border border-black/5">
-          <p class="text-[10px] font-bold">FIAP Cybersecurity</p>
-          <p class="text-[8px] text-slate-500">mai/2025</p>
-        </div>
-        <div class="p-4 bg-white dark:bg-white/5 rounded-xl text-center border border-black/5">
-          <p class="text-[10px] font-bold">Bradesco LGPD</p>
-          <p class="text-[8px] text-slate-500">abr/2024</p>
-        </div>
-        <div class="p-4 bg-white dark:bg-white/5 rounded-xl text-center border border-black/5">
-          <p class="text-[10px] font-bold">Data Science Academy</p>
-          <p class="text-[8px] text-slate-500">Ciência de Dados</p>
-        </div>
-        <div class="p-4 bg-white dark:bg-white/5 rounded-xl text-center border border-black/5">
-          <p class="text-[10px] font-bold">SAP Activate</p>
-          <p class="text-[8px] text-slate-500">Alura · jul/2024</p>
-        </div>
-        <div class="p-4 bg-white dark:bg-white/5 rounded-xl text-center border border-black/5">
-          <p class="text-[10px] font-bold">Blip Academy IA</p>
-          <p class="text-[8px] text-slate-500">mar/2025</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <footer id="contato" class="py-20 border-t dark:border-white/5">
-    <div class="max-w-4xl mx-auto px-6 text-center">
-      <h2 class="font-display text-4xl font-black mb-8 dark:text-white">Seu negócio merece soluções que funcionam de verdade.</h2>
-      <div class="flex flex-col md:flex-row items-center justify-center gap-6 mb-12">
-        <a href="https://wa.me/5531993404537" class="flex items-center gap-3 p-4 bg-emerald-500/10 rounded-2xl border border-emerald-500/20 text-emerald-500 hover:bg-emerald-500 hover:text-white transition-all">
-          <i data-lucide="message-circle"></i>
-          <span class="font-bold">(31) 99340-4537</span>
         </a>
-        <a href="mailto:raphaelferrari10@gmail.com" class="flex items-center gap-3 p-4 bg-gold/10 rounded-2xl border border-gold/20 text-gold hover:bg-gold hover:text-navy transition-all">
-          <i data-lucide="mail"></i>
-          <span class="font-bold">raphaelferrari10@gmail.com</span>
+
+        <a href="mailto:raphaelferrari10@gmail.com" class="flex items-center gap-3 group no-underline">
+          <div class="w-10 h-10 rounded-lg flex items-center justify-center bg-yellow-50 dark:bg-brand-gold/10 group-hover:bg-yellow-100 transition-colors">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-5 h-5 text-yellow-600 dark:text-brand-gold"><rect x="2" y="4" width="20" height="16" rx="2"/><path stroke-linecap="round" d="M2 7l10 7 10-7"/></svg>
+          </div>
+          <div>
+            <p class="text-[10px] text-light-muted dark:text-brand-slate uppercase font-bold">E-mail</p>
+            <p class="text-light-text dark:text-white font-bold text-sm">raphaelferrari10@gmail.com</p>
+          </div>
         </a>
       </div>
-      <p class="text-[10px] text-slate-500 uppercase tracking-widest">© 2025 Raphael Ferrari · Data Solutions. Todos os direitos reservados.</p>
     </div>
-  </footer>
 
-  <script>
-    // Initialize Lucide
-    lucide.createIcons();
+    <div class="gold-divider mt-12 mb-6"></div>
+    <div class="flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-light-muted dark:text-brand-slate">
+      <p>© 2026 Raphael Ferrari · Data Solutions. Todos os direitos reservados.</p>
+      <p>Feito para decisões melhores</p>
+    </div>
+  </div>
+</footer>
 
-    // Theme Logic
-    const themeToggle = document.getElementById('theme-toggle');
-    const themeIcon = document.getElementById('theme-icon');
-    const html = document.documentElement;
+<script>
+  // ── Theme Toggle Logic ────────────────────────────────────
+  const themeToggle = document.getElementById('theme-toggle');
+  const html = document.documentElement;
 
-    function applyTheme(theme) {
-      if (theme === 'dark') {
-        html.classList.add('dark');
-        themeIcon.setAttribute('data-lucide', 'sun');
-      } else {
-        html.classList.remove('dark');
-        themeIcon.setAttribute('data-lucide', 'moon');
-      }
-      lucide.createIcons();
-      themeIcon.classList.add('rotate-icon');
-      setTimeout(() => themeIcon.classList.remove('rotate-icon'), 500);
+  // Verifica preferência salva
+  if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+    html.classList.add('dark');
+  } else {
+    html.classList.remove('dark');
+  }
+
+  themeToggle.addEventListener('click', () => {
+    html.classList.toggle('dark');
+    // Animação no botão
+    themeToggle.style.transform = 'scale(0.8)';
+    setTimeout(() => themeToggle.style.transform = 'scale(1)', 150);
+    
+    if (html.classList.contains('dark')) {
+      localStorage.theme = 'dark';
+    } else {
+      localStorage.theme = 'light';
     }
+  });
 
-    const savedTheme = localStorage.getItem('theme') || 'dark';
-    applyTheme(savedTheme);
+  // ── Intersection Observer (Revelar Elementos) ──────────────
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
 
-    themeToggle.addEventListener('click', () => {
-      const newTheme = html.classList.contains('dark') ? 'light' : 'dark';
-      localStorage.setItem('theme', newTheme);
-      applyTheme(newTheme);
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  // ── Bento Cards 3D Tilt & Glow Effect (Vanilla JS) ────────
+  const cards = document.querySelectorAll('.tilt-element');
+  
+  cards.forEach(card => {
+    card.addEventListener('mousemove', e => {
+      const rect = card.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      
+      // Atualiza coordenadas do Glow
+      card.style.setProperty('--x', `${x}px`);
+      card.style.setProperty('--y', `${y}px`);
+
+      // Calcula Tilt
+      const centerX = rect.width / 2;
+      const centerY = rect.height / 2;
+      const rotateX = ((y - centerY) / centerY) * -3; // intensidade do tilt
+      const rotateY = ((x - centerX) / centerX) * 3;
+
+      card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-5px)`;
     });
 
-    // Mouse Glow
-    document.querySelectorAll('.bento-card').forEach(card => {
-      card.addEventListener('mousemove', e => {
-        const rect = card.getBoundingClientRect();
-        card.style.setProperty('--x', `${e.clientX - rect.left}px`);
-        card.style.setProperty('--y', `${e.clientY - rect.top}px`);
-      });
+    card.addEventListener('mouseleave', () => {
+      card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0px)';
     });
+  });
+</script>
 
-    // Intersection Observer
-    const reveal = (entries, observer) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('visible');
-          observer.unobserve(entry.target);
-        }
-      });
-    };
-    const observer = new IntersectionObserver(reveal, { threshold: 0.1 });
-    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
-  </script>
 </body>
 </html>
