@@ -5,12 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Raphael Ferrari · Data Solutions</title>
 
+  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
 
+  <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
 
+  <!-- Bibliotecas: GSAP & Lenis -->
   <script src="https://unpkg.com/@studio-freight/lenis@1.0.39/dist/lenis.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
@@ -47,35 +50,37 @@
   </script>
 
   <style>
-    :root { --transition-speed: 0.5s; }
+    :root { --transition-speed: 0.4s; }
     body { transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease; }
     
     /* Previne "pisca" de conteúdo antes da animação GSAP */
     .reveal { visibility: hidden; }
 
-    /* Noise Overlay */
+    /* Noise Overlay otimizado (sem opacity blend pesado) */
     .noise-bg::before {
       content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 50;
       background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
-      opacity: 0.8;
     }
 
-    /* Bento Cards */
+    /* Bento Cards otimizados para GPU */
     .bento-card {
-      position: relative; border-radius: 1.25rem; transition: border-color 0.4s, box-shadow 0.4s;
-      overflow: hidden; transform-style: preserve-3d; will-change: transform;
+      position: relative; border-radius: 1.25rem; transition: border-color 0.3s ease;
+      overflow: hidden; transform-style: preserve-3d;
+      will-change: transform; /* Hint para a placa de vídeo */
     }
-    .dark .bento-card { background: rgba(13, 28, 54, 0.7); border: 1px solid rgba(255, 255, 255, 0.05); backdrop-filter: blur(12px); }
-    .light .bento-card { background: #FFFFFF; border: 1px solid #E2E8F0; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
+    
+    /* Removido o backdrop-filter pesado, usando cor sólida luxuosa */
+    .dark .bento-card { background: rgba(13, 28, 54, 0.95); border: 1px solid rgba(255, 255, 255, 0.05); }
+    .light .bento-card { background: #FFFFFF; border: 1px solid #E2E8F0; box-shadow: 0 4px 20px rgba(0,0,0,0.03); }
     .bento-card:hover { border-color: #c9a84c; }
 
-    /* Mouse Glow */
-    .glow-overlay { position: absolute; inset: 0; pointer-events: none; opacity: 0; transition: opacity 0.3s; z-index: 0; }
+    /* Mouse Glow - Utiliza GPU Acceleration */
+    .glow-overlay { position: absolute; inset: 0; pointer-events: none; opacity: 0; transition: opacity 0.3s; z-index: 0; transform: translateZ(0); }
     .dark .glow-overlay { background: radial-gradient(600px circle at var(--x, 50%) var(--y, 50%), rgba(201, 168, 76, 0.1), transparent 40%); }
     .light .glow-overlay { background: radial-gradient(600px circle at var(--x, 50%) var(--y, 50%), rgba(201, 168, 76, 0.05), transparent 40%); }
     .bento-card:hover .glow-overlay { opacity: 1; }
     
-    .card-content { position: relative; z-index: 1; }
+    .card-content { position: relative; z-index: 1; pointer-events: none; /* Evita que os filhos bloqueiem o mousemove do pai */ }
     .gold-rule { display: inline-block; width: 48px; height: 2px; background: #c9a84c; border-radius: 2px; }
 
     /* Botão WA */
@@ -87,16 +92,20 @@
     .btn-wa:hover { background: #1da851; transform: translateY(-2px); box-shadow: 0 6px 20px rgba(37,211,102,.4); }
 
     @keyframes pulse-green { 0%, 100% { box-shadow: 0 0 0 0 rgba(37,211,102,.5); } 50% { box-shadow: 0 0 0 6px rgba(37,211,102,0); } }
+    
+    /* Scrollbar */
     ::-webkit-scrollbar { width: 8px; }
     .dark ::-webkit-scrollbar-thumb { background: rgba(201,168,76,.3); border-radius: 4px; }
     .light ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 4px; }
 
+    /* Lenis Fixes */
     html.lenis { height: auto; }
     .lenis.lenis-smooth { scroll-behavior: auto !important; }
   </style>
 </head>
 <body class="noise-bg bg-light-bg dark:bg-brand-navy text-light-text dark:text-slate-200 font-body relative">
 
+<!-- NAV -->
 <nav class="fixed top-0 w-full z-50 bg-white/80 dark:bg-brand-navy/90 backdrop-blur-md border-b border-light-border dark:border-white/5 transition-colors duration-500">
   <div class="max-w-6xl mx-auto px-6 h-20 flex items-center justify-between">
     
@@ -128,8 +137,9 @@
   </div>
 </nav>
 
+<!-- HERO -->
 <section class="relative min-h-[90vh] flex items-center pt-24 pb-12 overflow-hidden">
-  <div class="absolute inset-0 z-0 hidden dark:block opacity-50" style="background: radial-gradient(ellipse 60% 60% at 10% 0%, rgba(30,64,128,.4) 0%, transparent 60%), radial-gradient(ellipse 50% 50% at 90% 20%, rgba(201,168,76,.1) 0%, transparent 55%), radial-gradient(ellipse 70% 80% at 50% 100%, rgba(14,40,90,.6) 0%, transparent 70%);"></div>
+  <div class="absolute inset-0 z-0 hidden dark:block opacity-40" style="background: radial-gradient(ellipse 60% 60% at 10% 0%, rgba(30,64,128,.4) 0%, transparent 60%), radial-gradient(ellipse 50% 50% at 90% 20%, rgba(201,168,76,.1) 0%, transparent 55%), radial-gradient(ellipse 70% 80% at 50% 100%, rgba(14,40,90,.6) 0%, transparent 70%); pointer-events: none;"></div>
 
   <div class="max-w-6xl mx-auto px-6 w-full relative z-10">
     <div class="flex flex-col lg:flex-row items-center gap-16">
@@ -165,7 +175,7 @@
           </div>
           <div class="bento-card px-5 py-3 text-center border-none dark:border-solid dark:border-white/5 bg-white shadow-sm dark:bg-brand-surfaceElevated/50">
             <span class="font-display text-2xl font-bold text-brand-gold block">100%</span>
-            <span class="text-xs text-light-muted dark:text-brand-slate">Foco no seu resultado</span>
+            <span class="text-xs text-light-muted dark:text-brand-slate">Foco no resultado</span>
           </div>
         </div>
       </div>
@@ -214,6 +224,7 @@
   </div>
 </section>
 
+<!-- SOLUÇÕES -->
 <section id="solucoes" class="py-24 bg-slate-100/50 dark:bg-brand-surface/50 border-y border-slate-200 dark:border-white/5">
   <div class="max-w-6xl mx-auto px-6">
     <div class="text-center mb-16 reveal">
@@ -258,7 +269,7 @@
         <div class="glow-overlay"></div>
         <div class="card-content">
           <div class="w-12 h-12 rounded-xl bg-brand-gold/10 flex items-center justify-center mb-6"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-6 h-6 text-brand-gold"><path d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" stroke-width="2"/></svg></div>
-          <h3 class="font-display text-2xl font-bold mb-4 dark:text-white text-navy">Conexão com Banco de Dados</h3>
+          <h3 class="font-display text-2xl font-bold mb-4 dark:text-white text-navy">Conexão de Dados</h3>
           <p class="text-sm text-light-muted dark:text-brand-slate leading-relaxed mb-4">Conexão direta com MySQL, PostgreSQL e BigQuery para análise de grandes volumes em tempo real.</p>
           <ul class="text-xs space-y-2 font-medium text-light-muted dark:text-brand-slate">
             <li>· Queries otimizadas</li>
@@ -271,11 +282,11 @@
         <div class="glow-overlay"></div>
         <div class="card-content">
           <div class="w-12 h-12 rounded-xl bg-brand-gold/10 flex items-center justify-center mb-6"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-6 h-6 text-brand-gold"><path d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" stroke-width="2"/></svg></div>
-          <h3 class="font-display text-2xl font-bold mb-4 dark:text-white text-navy">Landing Pages de Conversão</h3>
+          <h3 class="font-display text-2xl font-bold mb-4 dark:text-white text-navy">Landing Pages</h4>
           <p class="text-sm text-light-muted dark:text-brand-slate leading-relaxed mb-4">Páginas profissionais, responsivas e otimizadas com design moderno e foco total no seu objetivo.</p>
           <ul class="text-xs space-y-2 font-medium text-light-muted dark:text-brand-slate">
             <li>· Mobile-first & SEO</li>
-            <li>· Sem dependências pesadas</li>
+            <li>· Alta velocidade de carregamento</li>
           </ul>
         </div>
       </div>
@@ -310,13 +321,14 @@
   </div>
 </section>
 
+<!-- ESPECIALISTA -->
 <section id="especialista" class="py-24">
   <div class="max-w-5xl mx-auto px-6">
     <div class="flex flex-col lg:flex-row items-center gap-16">
       
       <div class="flex-shrink-0 reveal">
         <div class="relative">
-          <div class="w-48 h-48 lg:w-64 lg:h-64 rounded-full bg-gradient-to-br from-brand-surfaceElevated to-brand-navy border-2 border-brand-gold/30 flex items-center justify-center font-display text-5xl font-bold text-brand-gold shadow-premium">RF</div>
+          <div class="w-48 h-48 lg:w-64 lg:h-64 rounded-full bg-gradient-to-br from-brand-surfaceElevated to-brand-navy border-2 border-brand-gold/30 flex items-center justify-center font-display text-5xl font-bold text-brand-gold shadow-md">RF</div>
           <div class="absolute -bottom-2 -right-2 w-12 h-12 rounded-full flex items-center justify-center bg-green-500 shadow-lg border-4 border-white dark:border-brand-navy"><svg viewBox="0 0 24 24" fill="white" class="w-6 h-6"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg></div>
         </div>
       </div>
@@ -352,6 +364,7 @@
   </div>
 </section>
 
+<!-- CERTIFICAÇÕES -->
 <section id="certificacoes" class="py-24 bg-slate-50 dark:bg-brand-surface border-y border-slate-200 dark:border-white/5">
   <div class="max-w-6xl mx-auto px-6">
     <div class="text-center mb-16 reveal">
@@ -383,6 +396,7 @@
   </div>
 </section>
 
+<!-- PROCESSO -->
 <section class="py-24 bg-white dark:bg-[#070f1e] text-center">
   <div class="max-w-5xl mx-auto px-6">
     <div class="flex items-center justify-center gap-3 mb-4 reveal"><span class="gold-rule"></span><span class="text-xs font-bold tracking-widest uppercase text-brand-gold">Fluxo</span><span class="gold-rule"></span></div>
@@ -396,6 +410,7 @@
   </div>
 </section>
 
+<!-- CTA -->
 <section class="py-24 bg-brand-navy relative overflow-hidden">
   <div class="max-w-4xl mx-auto px-6 text-center relative z-10">
     <h2 class="font-display text-4xl lg:text-6xl text-white font-black mb-8 leading-tight reveal">Seu negócio merece <br/><span class="text-brand-gold italic">soluções que funcionam.</span></h2>
@@ -404,7 +419,8 @@
   </div>
 </section>
 
-<footer class="py-14 bg-white dark:bg-brand-navy border-t dark:border-white/5">
+<!-- FOOTER -->
+<footer class="py-14 bg-white dark:bg-brand-navy border-t border-slate-200 dark:border-white/5">
   <div class="max-w-6xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-8">
     <div class="text-center md:text-left">
       <span class="block font-bold text-light-text dark:text-white">Raphael Ferrari · Data Solutions</span>
@@ -418,15 +434,18 @@
 </footer>
 
 <script>
-  // 1. Lenis Smooth Scroll
-  const lenis = new Lenis({ duration: 1.2, easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), smooth: true });
-  function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
-  requestAnimationFrame(raf);
+  // 1. Lenis Smooth Scroll (Otimizado)
+  const lenis = new Lenis({
+    duration: 1.2,
+    easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+    smooth: true,
+  });
 
-  // 2. GSAP Core
+  // 2. Integração CORRETA entre GSAP e Lenis (Isto remove o lag/stuttering)
   gsap.registerPlugin(ScrollTrigger);
   lenis.on('scroll', ScrollTrigger.update);
   gsap.ticker.add((time) => { lenis.raf(time * 1000); });
+  gsap.ticker.lagSmoothing(0); // Necessário para evitar conflitos de RAF
 
   // 3. Theme Toggle
   const themeToggle = document.getElementById('theme-toggle');
@@ -439,25 +458,41 @@
 
   // 4. Hero & Reveal Animations
   const tlHero = gsap.timeline({ defaults: { ease: "power4.out" } });
-  tlHero.fromTo(".hero-elem", { y: 40, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 1, stagger: 0.15 }, 0.2)
-        .fromTo(".hero-visual", { x: 40, autoAlpha: 0, rotationY: -10 }, { x: 0, autoAlpha: 1, rotationY: 0, duration: 1.5 }, 0.5);
+  tlHero.fromTo(".hero-elem", { y: 40, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 1, stagger: 0.1 }, 0.1)
+        .fromTo(".hero-visual", { x: 40, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 1.2 }, 0.4);
 
   ScrollTrigger.batch(".reveal", {
-    onEnter: batch => gsap.fromTo(batch, { y: 60, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 1, stagger: 0.15, ease: "power3.out" }),
-    start: "top 85%",
+    onEnter: batch => gsap.fromTo(batch, { y: 40, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 0.8, stagger: 0.1, ease: "power3.out" }),
+    start: "top 90%",
   });
 
-  // 5. 3D Tilt & Mouse Glow
+  // 5. 3D Tilt & Mouse Glow OTIMIZADOS (Com Cache)
   document.querySelectorAll('.tilt-element').forEach(card => {
+    let rect; // Cache do tamanho para não causar Layout Thrashing no GPU
+    
+    card.addEventListener('mouseenter', () => { rect = card.getBoundingClientRect(); });
+    
     card.addEventListener('mousemove', e => {
-      const rect = card.getBoundingClientRect();
-      const x = e.clientX - rect.left; const y = e.clientY - rect.top;
-      card.style.setProperty('--x', `${x}px`); card.style.setProperty('--y', `${y}px`);
-      const rotateX = ((y - rect.height/2) / (rect.height/2)) * -2.5; 
-      const rotateY = ((x - rect.width/2) / (rect.width/2)) * 2.5;
-      gsap.to(card, { rotationX: rotateX, rotationY: rotateY, transformPerspective: 1000, duration: 0.4 });
+      if(!rect) return;
+      const x = e.clientX - rect.left; 
+      const y = e.clientY - rect.top;
+      
+      card.style.setProperty('--x', `${x}px`); 
+      card.style.setProperty('--y', `${y}px`);
+      
+      const centerX = rect.width / 2; 
+      const centerY = rect.height / 2;
+      const rotateX = ((y - centerY) / centerY) * -2.5; 
+      const rotateY = ((x - centerX) / centerX) * 2.5;
+      
+      // GSAP trata a interpolação via GPU
+      gsap.to(card, { rotationX: rotateX, rotationY: rotateY, transformPerspective: 1000, duration: 0.4, ease: "power1.out", overwrite: "auto" });
     });
-    card.addEventListener('mouseleave', () => gsap.to(card, { rotationX: 0, rotationY: 0, duration: 0.7, ease: "elastic.out(1, 0.3)" }));
+    
+    card.addEventListener('mouseleave', () => {
+      rect = null;
+      gsap.to(card, { rotationX: 0, rotationY: 0, duration: 0.7, ease: "elastic.out(1, 0.3)", overwrite: "auto" });
+    });
   });
 </script>
 
