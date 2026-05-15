@@ -47,10 +47,10 @@
   </script>
 
   <style>
-    :root { --transition-slow: 0.5s; }
-    body { transition: background-color var(--transition-slow) ease, color var(--transition-slow) ease; }
+    :root { --transition-speed: 0.5s; }
+    body { transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease; }
     
-    /* Oculta elementos iniciais para animação GSAP */
+    /* Previne "pisca" de conteúdo antes da animação GSAP */
     .reveal { visibility: hidden; }
 
     /* Noise Overlay */
@@ -69,7 +69,7 @@
     .light .bento-card { background: #FFFFFF; border: 1px solid #E2E8F0; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
     .bento-card:hover { border-color: #c9a84c; }
 
-    /* Glow Effect */
+    /* Mouse Glow */
     .glow-overlay { position: absolute; inset: 0; pointer-events: none; opacity: 0; transition: opacity 0.3s; z-index: 0; }
     .dark .glow-overlay { background: radial-gradient(600px circle at var(--x, 50%) var(--y, 50%), rgba(201, 168, 76, 0.1), transparent 40%); }
     .light .glow-overlay { background: radial-gradient(600px circle at var(--x, 50%) var(--y, 50%), rgba(201, 168, 76, 0.05), transparent 40%); }
@@ -78,7 +78,7 @@
     .card-content { position: relative; z-index: 1; }
     .gold-rule { display: inline-block; width: 48px; height: 2px; background: #c9a84c; border-radius: 2px; }
 
-    /* Botão WhatsApp */
+    /* Botão WA */
     .btn-wa {
       display: inline-flex; align-items: center; justify-content: center; gap: 0.6rem;
       background: #25D366; color: #fff; font-weight: 600; border-radius: 6px;
@@ -109,16 +109,16 @@
       </div>
       <div class="leading-tight">
         <span class="block font-bold text-sm text-light-text dark:text-white">Raphael Ferrari</span>
-        <span class="block text-[10px] uppercase font-bold tracking-[0.15em] text-brand-gold">Data Solutions</span>
+        <span class="block text-[10px] uppercase font-bold tracking-[0.15em] text-brand-gold">DATA SOLUTIONS</span>
       </div>
     </a>
 
     <div class="hidden md:flex items-center gap-8">
-      <a href="#solucoes" class="text-sm font-medium text-light-muted dark:text-brand-slate hover:text-brand-gold dark:hover:text-white">Soluções</a>
-      <a href="#especialista" class="text-sm font-medium text-light-muted dark:text-brand-slate hover:text-brand-gold dark:hover:text-white">Especialista</a>
-      <a href="#certificacoes" class="text-sm font-medium text-light-muted dark:text-brand-slate hover:text-brand-gold dark:hover:text-white">Certificações</a>
+      <a href="#solucoes" class="text-sm font-medium text-light-muted dark:text-brand-slate hover:text-brand-gold dark:hover:text-white transition-colors">Soluções</a>
+      <a href="#especialista" class="text-sm font-medium text-light-muted dark:text-brand-slate hover:text-brand-gold dark:hover:text-white transition-colors">Especialista</a>
+      <a href="#certificacoes" class="text-sm font-medium text-light-muted dark:text-brand-slate hover:text-brand-gold dark:hover:text-white transition-colors">Certificações</a>
       
-      <button id="theme-toggle" class="relative p-2 rounded-full hover:bg-slate-100 dark:hover:bg-white/10 transition-colors" aria-label="Toggle Theme">
+      <button id="theme-toggle" class="relative p-2 rounded-full hover:bg-slate-100 dark:hover:bg-white/10 transition-colors focus:outline-none" aria-label="Toggle Theme">
         <svg id="icon-sun" class="w-5 h-5 text-brand-gold hidden dark:block" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
         <svg id="icon-moon" class="w-5 h-5 text-brand-surfaceElevated dark:hidden" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
       </button>
@@ -128,7 +128,7 @@
   </div>
 </nav>
 
-<section class="relative min-h-[95vh] flex items-center pt-24 pb-12 overflow-hidden">
+<section class="relative min-h-[90vh] flex items-center pt-24 pb-12 overflow-hidden">
   <div class="absolute inset-0 z-0 hidden dark:block opacity-50" style="background: radial-gradient(ellipse 60% 60% at 10% 0%, rgba(30,64,128,.4) 0%, transparent 60%), radial-gradient(ellipse 50% 50% at 90% 20%, rgba(201,168,76,.1) 0%, transparent 55%), radial-gradient(ellipse 70% 80% at 50% 100%, rgba(14,40,90,.6) 0%, transparent 70%);"></div>
 
   <div class="max-w-6xl mx-auto px-6 w-full relative z-10">
@@ -137,15 +137,16 @@
       <div class="flex-1 hero-content">
         <div class="flex items-center gap-3 mb-6 hero-elem">
           <span class="gold-rule"></span>
-          <span class="text-xs font-bold tracking-widest uppercase text-brand-gold">Sites · Dashboards · Segurança</span>
+          <span class="text-xs font-bold tracking-widest uppercase text-brand-gold">Inteligência de Negócios & Analytics</span>
         </div>
 
         <h1 class="font-display text-light-text dark:text-white mb-6 leading-tight hero-elem" style="font-size: clamp(2.4rem, 5vw, 4rem);">
-          Decisões <em class="text-brand-gold not-italic font-black">inteligentes</em>,<br/>presença digital segura.
+          Tome decisões <br/>
+          <em class="text-brand-gold not-italic font-black italic">baseadas em dados,</em><br/> não em intuição.
         </h1>
 
         <p class="text-light-muted dark:text-brand-slate text-lg mb-10 max-w-lg leading-relaxed hero-elem">
-          Soluções completas para empresas que buscam crescer com clareza, controle e confiança digital.
+          Dashboards, segurança digital, processos documentados e presença online — soluções completas para empresas que querem crescer com <strong class="text-light-text dark:text-white font-semibold">clareza, controle e confiança.</strong>
         </p>
 
         <div class="flex flex-wrap gap-4 mb-12 hero-elem">
@@ -164,7 +165,7 @@
           </div>
           <div class="bento-card px-5 py-3 text-center border-none dark:border-solid dark:border-white/5 bg-white shadow-sm dark:bg-brand-surfaceElevated/50">
             <span class="font-display text-2xl font-bold text-brand-gold block">100%</span>
-            <span class="text-xs text-light-muted dark:text-brand-slate">Foco no resultado</span>
+            <span class="text-xs text-light-muted dark:text-brand-slate">Foco no seu resultado</span>
           </div>
         </div>
       </div>
@@ -175,7 +176,7 @@
           <div class="card-content">
             <div class="flex items-center justify-between border-b border-slate-200 dark:border-white/10 pb-6 mb-6">
               <div>
-                <p class="text-[10px] text-light-muted dark:text-brand-slate uppercase tracking-widest font-bold mb-2">Performance em Tempo Real</p>
+                <p class="text-[10px] text-light-muted dark:text-brand-slate uppercase tracking-widest font-bold mb-2">Receita · Jan–Jun</p>
                 <p class="font-display text-4xl font-bold text-light-text dark:text-white tracking-tight">R$ 2.4<span class="text-2xl text-brand-gold ml-1">M</span></p>
               </div>
               <div class="flex flex-col items-end">
@@ -201,7 +202,7 @@
             <div class="pt-4 border-t border-slate-200 dark:border-white/10 flex justify-between items-center">
               <p class="text-[10px] text-light-muted dark:text-brand-slate font-bold uppercase tracking-wider">NPS Global</p>
               <div class="flex items-center gap-3">
-                <div class="w-24 bg-slate-200 dark:bg-brand-surfaceElevated rounded-full h-1.5"><div class="bg-brand-gold h-1.5 rounded-full" style="width: 92%"></div></div>
+                <div class="w-24 bg-slate-200 dark:bg-brand-surfaceElevated rounded-full h-1.5 overflow-hidden"><div class="bg-brand-gold h-1.5 rounded-full" style="width: 92%"></div></div>
                 <p class="text-brand-gold font-bold text-sm">92</p>
               </div>
             </div>
@@ -216,93 +217,218 @@
 <section id="solucoes" class="py-24 bg-slate-100/50 dark:bg-brand-surface/50 border-y border-slate-200 dark:border-white/5">
   <div class="max-w-6xl mx-auto px-6">
     <div class="text-center mb-16 reveal">
-      <h2 class="font-display text-4xl md:text-5xl font-black mb-4 text-light-text dark:text-white">Especialidades <span class="text-brand-gold italic">Estratégicas</span></h2>
+      <div class="flex items-center justify-center gap-3 mb-4">
+        <span class="gold-rule"></span>
+        <span class="text-xs font-bold tracking-widest uppercase text-brand-gold">Soluções</span>
+        <span class="gold-rule"></span>
+      </div>
+      <h2 class="font-display text-4xl md:text-5xl font-black mb-4 text-light-text dark:text-white">Soluções sob medida para o seu <span class="text-brand-gold italic">negócio avançar</span></h2>
+      <p class="text-light-muted dark:text-brand-slate max-w-xl mx-auto text-lg">Cada entrega é pensada para gerar resultado real, não apenas relatório.</p>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      
       <div class="bento-card p-8 reveal tilt-element">
         <div class="glow-overlay"></div>
         <div class="card-content">
-          <h3 class="font-display text-2xl font-bold mb-3 text-brand-gold">Criação de Sites</h3>
-          <p class="text-sm text-light-muted dark:text-brand-slate">Landing Pages de alta conversão, responsivas e otimizadas com foco em PMEs e lançamentos.</p>
+          <div class="w-12 h-12 rounded-xl bg-brand-gold/10 flex items-center justify-center mb-6"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-6 h-6 text-brand-gold"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" stroke-width="2"/></svg></div>
+          <h3 class="font-display text-2xl font-bold mb-4 dark:text-white text-navy">Dashboards Automatizados</h3>
+          <p class="text-sm text-light-muted dark:text-brand-slate leading-relaxed mb-4">Painéis interativos no Looker Studio integrados ao Google Sheets, com atualização automática e filtros dinâmicos.</p>
+          <ul class="text-xs space-y-2 font-medium text-light-muted dark:text-brand-slate">
+            <li>· KPIs e metas em tempo real</li>
+            <li>· Relatórios automáticos por e-mail</li>
+          </ul>
         </div>
       </div>
+
+      <div class="bento-card p-8 reveal tilt-element border-brand-gold/30">
+        <div class="glow-overlay"></div>
+        <div class="card-content">
+          <div class="w-12 h-12 rounded-xl bg-brand-gold/10 flex items-center justify-center mb-6"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-6 h-6 text-brand-gold"><path d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" stroke-width="2"/></svg></div>
+          <h3 class="font-display text-2xl font-bold mb-4 dark:text-white text-navy">Integração de APIs</h3>
+          <p class="text-sm text-light-muted dark:text-brand-slate leading-relaxed mb-4">Conecto sistemas como CRM e ERP diretamente ao painel, eliminando retrabalho manual com automação de ponta a ponta.</p>
+          <ul class="text-xs space-y-2 font-medium text-light-muted dark:text-brand-slate">
+            <li>· REST APIs & Webhooks</li>
+            <li>· Múltiplas fontes num painel único</li>
+          </ul>
+        </div>
+      </div>
+
       <div class="bento-card p-8 reveal tilt-element">
         <div class="glow-overlay"></div>
         <div class="card-content">
-          <h3 class="font-display text-2xl font-bold mb-3 text-brand-gold">Looker Dashboards</h3>
-          <p class="text-sm text-light-muted dark:text-brand-slate">Inteligência de dados com painéis automáticos sincronizados com Sheets e BigQuery.</p>
+          <div class="w-12 h-12 rounded-xl bg-brand-gold/10 flex items-center justify-center mb-6"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-6 h-6 text-brand-gold"><path d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" stroke-width="2"/></svg></div>
+          <h3 class="font-display text-2xl font-bold mb-4 dark:text-white text-navy">Conexão com Banco de Dados</h3>
+          <p class="text-sm text-light-muted dark:text-brand-slate leading-relaxed mb-4">Conexão direta com MySQL, PostgreSQL e BigQuery para análise de grandes volumes em tempo real.</p>
+          <ul class="text-xs space-y-2 font-medium text-light-muted dark:text-brand-slate">
+            <li>· Queries otimizadas</li>
+            <li>· Escalável para milhões de registros</li>
+          </ul>
         </div>
       </div>
+
       <div class="bento-card p-8 reveal tilt-element">
         <div class="glow-overlay"></div>
         <div class="card-content">
-          <h3 class="font-display text-2xl font-bold mb-3 text-brand-gold">Cybersecurity</h3>
-          <p class="text-sm text-light-muted dark:text-brand-slate">Diagnóstico de vulnerabilidades, blindagem LGPD e consultoria em segurança digital.</p>
+          <div class="w-12 h-12 rounded-xl bg-brand-gold/10 flex items-center justify-center mb-6"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-6 h-6 text-brand-gold"><path d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" stroke-width="2"/></svg></div>
+          <h3 class="font-display text-2xl font-bold mb-4 dark:text-white text-navy">Landing Pages de Conversão</h3>
+          <p class="text-sm text-light-muted dark:text-brand-slate leading-relaxed mb-4">Páginas profissionais, responsivas e otimizadas com design moderno e foco total no seu objetivo.</p>
+          <ul class="text-xs space-y-2 font-medium text-light-muted dark:text-brand-slate">
+            <li>· Mobile-first & SEO</li>
+            <li>· Sem dependências pesadas</li>
+          </ul>
         </div>
       </div>
+
+      <div class="bento-card p-8 reveal tilt-element border-brand-gold/30">
+        <div class="glow-overlay"></div>
+        <div class="card-content">
+          <div class="w-12 h-12 rounded-xl bg-brand-gold/10 flex items-center justify-center mb-6"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-6 h-6 text-brand-gold"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" stroke-width="2"/></svg></div>
+          <h3 class="font-display text-2xl font-bold mb-4 dark:text-white text-navy">Segurança Digital & LGPD</h3>
+          <p class="text-sm text-light-muted dark:text-brand-slate leading-relaxed mb-4">Consultoria prática para proteger dados, acessos e reputação. Blindagem contra incidentes antes que ocorram.</p>
+          <ul class="text-xs space-y-2 font-medium text-light-muted dark:text-brand-slate">
+            <li>· Diagnóstico de vulnerabilidades</li>
+            <li>· Boas práticas de acessos</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="bento-card p-8 reveal tilt-element">
+        <div class="glow-overlay"></div>
+        <div class="card-content">
+          <div class="w-12 h-12 rounded-xl bg-brand-gold/10 flex items-center justify-center mb-6"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-6 h-6 text-brand-gold"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" stroke-width="2"/></svg></div>
+          <h3 class="font-display text-2xl font-bold mb-4 dark:text-white text-navy">Mapeamento de Processos</h3>
+          <p class="text-sm text-light-muted dark:text-brand-slate leading-relaxed mb-4">Transformo processos confusos em fluxogramas claros (BPMN) e documentações operacionais (POP).</p>
+          <ul class="text-xs space-y-2 font-medium text-light-muted dark:text-brand-slate">
+            <li>· Análise AS-IS / TO-BE</li>
+            <li>· Base para auditorias</li>
+          </ul>
+        </div>
+      </div>
+
     </div>
   </div>
 </section>
 
 <section id="especialista" class="py-24">
-  <div class="max-w-6xl mx-auto px-6">
-    <div class="flex flex-col lg:flex-row items-center gap-14 mb-24 reveal">
-      <div class="flex-shrink-0">
-        <div class="w-48 h-48 rounded-full bg-brand-surfaceElevated border-2 border-brand-gold/30 flex items-center justify-center font-display text-5xl font-bold text-brand-gold shadow-premium">RF</div>
+  <div class="max-w-5xl mx-auto px-6">
+    <div class="flex flex-col lg:flex-row items-center gap-16">
+      
+      <div class="flex-shrink-0 reveal">
+        <div class="relative">
+          <div class="w-48 h-48 lg:w-64 lg:h-64 rounded-full bg-gradient-to-br from-brand-surfaceElevated to-brand-navy border-2 border-brand-gold/30 flex items-center justify-center font-display text-5xl font-bold text-brand-gold shadow-premium">RF</div>
+          <div class="absolute -bottom-2 -right-2 w-12 h-12 rounded-full flex items-center justify-center bg-green-500 shadow-lg border-4 border-white dark:border-brand-navy"><svg viewBox="0 0 24 24" fill="white" class="w-6 h-6"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg></div>
+        </div>
       </div>
-      <div class="flex-1">
-        <h2 class="font-display text-3xl md:text-4xl mb-6 text-light-text dark:text-white font-black">Decisões baseadas em <em class="text-brand-gold not-italic">dados</em>.</h2>
-        <p class="text-light-muted dark:text-brand-slate text-lg leading-relaxed mb-6">Sou <strong>Raphael Ferrari</strong>, especialista multidisciplinar atuando na Hinova Pay. Transformo fluxos complexos em ecossistemas seguros e visualmente inteligentes.</p>
-        <div class="grid sm:grid-cols-2 gap-4">
-          <div class="p-4 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-sm font-bold">Graduação: Segurança da Informação (Uninter)</div>
-          <div class="p-4 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-sm font-bold text-brand-gold">Pós-Graduação: Cibersegurança (Hackone)</div>
+
+      <div class="flex-1 reveal">
+        <div class="flex items-center gap-3 mb-4">
+          <span class="gold-rule"></span>
+          <span class="text-xs font-bold tracking-widest uppercase text-brand-gold">Sobre o Especialista</span>
+        </div>
+        <h2 class="font-display text-3xl md:text-5xl font-black mb-6 text-light-text dark:text-white leading-tight">Dados são só números.<br/><span class="text-brand-gold italic">O que importa é a decisão.</span></h2>
+        <div class="space-y-4 text-light-muted dark:text-brand-slate text-lg leading-relaxed">
+          <p>Sou <strong>Raphael Ferrari</strong>, profissional com atuação em Inteligência de Dados, Segurança da Informação, Mapeamento de Processos e Desenvolvimento Web.</p>
+          <p>Essa combinação multidisciplinar garante entregas que geram resultado real. Cada projeto começa com um diagnóstico honesto e termina com acompanhamento até a solução operar sozinha.</p>
+        </div>
+
+        <div class="mt-8 p-6 rounded-2xl bg-slate-50 dark:bg-white/5 border border-brand-gold/10">
+          <p class="text-[10px] font-bold tracking-widest uppercase text-brand-gold mb-4">Formação Acadêmica</p>
+          <ul class="space-y-3">
+            <li class="flex items-center gap-3 text-sm font-bold text-light-text dark:text-white"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-5 h-5 text-brand-gold"><path d="M12 14l9-5-9-5-9 5 9 5z" stroke-width="2"/><path d="M12 14l6.16-3.422A12.083 12.083 0 0121 21H3a12.083 12.083 0 012.84-10.422L12 14z" stroke-width="2"/></svg> Graduação em Segurança da Informação — Uninter</li>
+            <li class="flex items-center gap-3 text-sm font-bold text-light-text dark:text-white"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-5 h-5 text-brand-gold"><path d="M12 14l9-5-9-5-9 5 9 5z" stroke-width="2"/><path d="M12 14l6.16-3.422A12.083 12.083 0 0121 21H3a12.083 12.083 0 012.84-10.422L12 14z" stroke-width="2"/></svg> Pós-Graduação em Redes e Cibersegurança — Hackone (Cursando)</li>
+          </ul>
+        </div>
+        
+        <div class="flex flex-wrap gap-2 mt-6">
+          <span class="px-4 py-2 bg-slate-100 dark:bg-white/5 rounded-full text-xs font-bold">Python</span>
+          <span class="px-4 py-2 bg-slate-100 dark:bg-white/5 rounded-full text-xs font-bold">n8n</span>
+          <span class="px-4 py-2 bg-slate-100 dark:bg-white/5 rounded-full text-xs font-bold">SQL / BigQuery</span>
+          <span class="px-4 py-2 bg-slate-100 dark:bg-white/5 rounded-full text-xs font-bold">Looker Studio</span>
+          <span class="px-4 py-2 bg-slate-100 dark:bg-white/5 rounded-full text-xs font-bold">APIs REST</span>
         </div>
       </div>
     </div>
+  </div>
+</section>
 
-    <div id="certificacoes" class="reveal">
-      <h3 class="font-display text-3xl text-center mb-12 text-light-text dark:text-white">Certificações de Mercado</h3>
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-        <div class="bento-card p-6 tilt-element"><p class="font-bold text-sm mb-1">Fortinet Certified Fundamentals</p><p class="text-[10px] text-brand-slate uppercase font-bold">FEV/2026 · Válido até 2028</p></div>
-        <div class="bento-card p-6 tilt-element"><p class="font-bold text-sm mb-1">Google Cybersecurity</p><p class="text-[10px] text-brand-slate uppercase font-bold">Professional · JAN/2026</p></div>
-        <div class="bento-card p-6 tilt-element"><p class="font-bold text-sm mb-1">Pre Security Certificate</p><p class="text-[10px] text-brand-slate uppercase font-bold">TryHackMe · NOV/2025</p></div>
-        <div class="bento-card p-6 tilt-element"><p class="font-bold text-sm mb-1">Formação Looker Studio</p><p class="text-[10px] text-brand-slate uppercase font-bold">Alura · abr/2024</p></div>
-      </div>
+<section id="certificacoes" class="py-24 bg-slate-50 dark:bg-brand-surface border-y border-slate-200 dark:border-white/5">
+  <div class="max-w-6xl mx-auto px-6">
+    <div class="text-center mb-16 reveal">
+      <div class="flex items-center justify-center gap-3 mb-4"><span class="gold-rule"></span><span class="text-xs font-bold tracking-widest uppercase text-brand-gold">Conhecimento</span><span class="gold-rule"></span></div>
+      <h2 class="font-display text-4xl font-black text-light-text dark:text-white">Formação Contínua</h2>
+    </div>
+
+    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 reveal">
+      <div class="bento-card p-6 tilt-element"><svg viewBox="0 0 24 24" fill="none" class="w-8 h-8 mb-4 stroke-red-500"><path d="M12 2L3 7v5c0 5.25 4.5 9.74 9 11 4.5-1.26 9-5.75 9-11V7L12 2z" stroke-width="2"/></svg><p class="font-bold text-sm mb-1">Fortinet Certified Fundamentals</p><p class="text-[10px] text-brand-slate uppercase font-bold">FCF · fev/2026</p></div>
+      <div class="bento-card p-6 tilt-element"><svg viewBox="0 0 24 24" fill="none" class="w-8 h-8 mb-4 stroke-blue-500"><path d="M12 11a4 4 0 100-8 4 4 0 000 8z" stroke-width="2"/><path d="M12 11v8m0 0l-3-3m3 3l3-3" stroke-width="2"/></svg><p class="font-bold text-sm mb-1">Google Cybersecurity</p><p class="text-[10px] text-brand-slate uppercase font-bold">Professional · jan/2026</p></div>
+      <div class="bento-card p-6 tilt-element"><svg viewBox="0 0 24 24" fill="none" class="w-8 h-8 mb-4 stroke-purple-500"><path d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" stroke-width="2"/></svg><p class="font-bold text-sm mb-1">Pre Security Certificate</p><p class="text-[10px] text-brand-slate uppercase font-bold">TryHackMe · nov/2025</p></div>
+      <div class="bento-card p-6 tilt-element"><svg viewBox="0 0 24 24" fill="none" class="w-8 h-8 mb-4 stroke-brand-gold"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2" stroke-width="2"/></svg><p class="font-bold text-sm mb-1">Formação Looker Studio</p><p class="text-[10px] text-brand-slate uppercase font-bold">Alura · abr/2024</p></div>
+    </div>
+
+    <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 reveal">
+      <div class="p-4 bg-white dark:bg-white/5 rounded-xl text-center border border-black/5"><p class="text-[10px] font-bold">Cisco Cybersecurity</p><p class="text-[8px] text-slate-500 uppercase">dez/2024</p></div>
+      <div class="p-4 bg-white dark:bg-white/5 rounded-xl text-center border border-black/5"><p class="text-[10px] font-bold">Endpoint Security</p><p class="text-[8px] text-slate-500 uppercase">Cisco · set/2024</p></div>
+      <div class="p-4 bg-white dark:bg-white/5 rounded-xl text-center border border-black/5"><p class="text-[10px] font-bold">FIAP Cybersec</p><p class="text-[8px] text-slate-500 uppercase">mai/2025</p></div>
+      <div class="p-4 bg-white dark:bg-white/5 rounded-xl text-center border border-black/5"><p class="text-[10px] font-bold">Bradesco LGPD</p><p class="text-[8px] text-slate-500 uppercase">abr/2024</p></div>
+      <div class="p-4 bg-white dark:bg-white/5 rounded-xl text-center border border-black/5"><p class="text-[10px] font-bold">SQL & SQLite</p><p class="text-[8px] text-slate-500 uppercase">Alura · mar/2024</p></div>
+      <div class="p-4 bg-white dark:bg-white/5 rounded-xl text-center border border-black/5"><p class="text-[10px] font-bold">Infra TI</p><p class="text-[8px] text-slate-500 uppercase">FIAP · dez/2022</p></div>
+      <div class="p-4 bg-white dark:bg-white/5 rounded-xl text-center border border-black/5"><p class="text-[10px] font-bold">SAP Activate</p><p class="text-[8px] text-slate-500 uppercase">jul/2024</p></div>
+      <div class="p-4 bg-white dark:bg-white/5 rounded-xl text-center border border-black/5"><p class="text-[10px] font-bold">SAP Geral</p><p class="text-[8px] text-slate-500 uppercase">Alura · jul/2024</p></div>
+      <div class="p-4 bg-white dark:bg-white/5 rounded-xl text-center border border-black/5"><p class="text-[10px] font-bold">Blip Academy IA</p><p class="text-[8px] text-slate-500 uppercase">mar/2025</p></div>
+      <div class="p-4 bg-white dark:bg-white/5 rounded-xl text-center border border-black/5"><p class="text-[10px] font-bold">Data Science</p><p class="text-[8px] text-slate-500 uppercase">DS Academy</p></div>
+      <div class="p-4 bg-white dark:bg-white/5 rounded-xl text-center border border-black/5"><p class="text-[10px] font-bold">Looker Studio</p><p class="text-[8px] text-slate-500 uppercase">Alura · abr/2024</p></div>
+      <div class="p-4 bg-white dark:bg-white/5 rounded-xl text-center border border-black/5"><p class="text-[10px] font-bold">Lógica de Prog.</p><p class="text-[8px] text-slate-500 uppercase">Certificate</p></div>
     </div>
   </div>
 </section>
 
 <section class="py-24 bg-white dark:bg-[#070f1e] text-center">
-  <div class="max-w-6xl mx-auto px-6">
-    <h2 class="font-display text-4xl font-black mb-16 reveal text-light-text dark:text-white italic">Do contato à entrega com resultado</h2>
-    <div class="grid sm:grid-cols-4 gap-8 mb-24">
-      <div class="reveal"><div class="w-12 h-12 rounded-full bg-brand-gold mx-auto mb-4 flex items-center justify-center font-bold text-white">1</div><h4 class="font-bold mb-2">Diagnóstico</h4><p class="text-xs text-brand-slate">Entendimento profundo do seu negócio.</p></div>
-      <div class="reveal"><div class="w-12 h-12 rounded-full bg-brand-gold mx-auto mb-4 flex items-center justify-center font-bold text-white">2</div><h4 class="font-bold mb-2">Proposta</h4><p class="text-xs text-brand-slate">Escopo, prazo e investimento claros.</p></div>
-      <div class="reveal"><div class="w-12 h-12 rounded-full bg-brand-gold mx-auto mb-4 flex items-center justify-center font-bold text-white">3</div><h4 class="font-bold mb-2">Execução</h4><p class="text-xs text-brand-slate">Desenvolvimento ágil e seguro.</p></div>
-      <div class="reveal"><div class="w-12 h-12 rounded-full bg-brand-gold mx-auto mb-4 flex items-center justify-center font-bold text-white">4</div><h4 class="font-bold mb-2">Suporte</h4><p class="text-xs text-brand-slate">Acompanhamento pós-entrega.</p></div>
-    </div>
-
-    <div class="reveal bg-brand-navy p-12 rounded-3xl text-center shadow-glow">
-      <h2 class="font-display text-4xl text-white font-black mb-8 leading-tight">Pronto para transformar sua <span class="text-brand-gold">estratégia</span>?</h2>
-      <a href="https://wa.me/5531993404537" target="_blank" class="btn-wa px-8 py-4 text-lg inline-flex">Falar com Raphael agora</a>
+  <div class="max-w-5xl mx-auto px-6">
+    <div class="flex items-center justify-center gap-3 mb-4 reveal"><span class="gold-rule"></span><span class="text-xs font-bold tracking-widest uppercase text-brand-gold">Fluxo</span><span class="gold-rule"></span></div>
+    <h2 class="font-display text-4xl font-black mb-16 reveal text-light-text dark:text-white">Do primeiro contato à <em class="text-brand-gold not-italic italic">entrega com resultado</em></h2>
+    <div class="grid sm:grid-cols-4 gap-8">
+      <div class="reveal"><div class="w-12 h-12 rounded-full bg-brand-gold mx-auto mb-6 flex items-center justify-center font-bold text-white shadow-lg">1</div><h4 class="font-bold mb-3 text-light-text dark:text-white">Diagnóstico</h4><p class="text-xs text-brand-slate leading-relaxed">Entendimento profundo do seu negócio, dores e objetivos — sem jargão.</p></div>
+      <div class="reveal"><div class="w-12 h-12 rounded-full bg-brand-gold mx-auto mb-6 flex items-center justify-center font-bold text-white shadow-lg">2</div><h4 class="font-bold mb-3 text-light-text dark:text-white">Proposta</h4><p class="text-xs text-brand-slate leading-relaxed">Solução personalizada com escopo, prazo e investimento claros.</p></div>
+      <div class="reveal"><div class="w-12 h-12 rounded-full bg-brand-gold mx-auto mb-6 flex items-center justify-center font-bold text-white shadow-lg">3</div><h4 class="font-bold mb-3 text-light-text dark:text-white">Desenvolvimento</h4><p class="text-xs text-brand-slate leading-relaxed">Execução técnica com atualizações constantes e espaço para ajustes.</p></div>
+      <div class="reveal"><div class="w-12 h-12 rounded-full bg-brand-gold mx-auto mb-6 flex items-center justify-center font-bold text-white shadow-lg">4</div><h4 class="font-bold mb-3 text-light-text dark:text-white">Entrega & Suporte</h4><p class="text-xs text-brand-slate leading-relaxed">Garantia de autonomia e solução operando com acompanhamento.</p></div>
     </div>
   </div>
 </section>
 
-<footer class="py-14 border-t border-slate-200 dark:border-white/5 text-center text-xs text-light-muted dark:text-brand-slate">
-  <p>© 2026 Raphael Ferrari · Data Solutions. Todos os direitos reservados.</p>
+<section class="py-24 bg-brand-navy relative overflow-hidden">
+  <div class="max-w-4xl mx-auto px-6 text-center relative z-10">
+    <h2 class="font-display text-4xl lg:text-6xl text-white font-black mb-8 leading-tight reveal">Seu negócio merece <br/><span class="text-brand-gold italic">soluções que funcionam.</span></h2>
+    <p class="text-brand-slate text-lg mb-12 max-w-2xl mx-auto reveal">Entre em contato agora para um diagnóstico gratuito. Seja para dados, segurança ou presença digital.</p>
+    <a href="https://wa.me/5531993404537" target="_blank" class="btn-wa px-10 py-5 text-lg inline-flex reveal">Falar com Raphael agora</a>
+  </div>
+</section>
+
+<footer class="py-14 bg-white dark:bg-brand-navy border-t dark:border-white/5">
+  <div class="max-w-6xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-8">
+    <div class="text-center md:text-left">
+      <span class="block font-bold text-light-text dark:text-white">Raphael Ferrari · Data Solutions</span>
+      <p class="text-xs text-light-muted dark:text-brand-slate mt-2">Belo Horizonte, MG · (31) 99340-4537</p>
+    </div>
+    <div class="flex gap-6">
+      <a href="mailto:raphaelferrari10@gmail.com" class="text-light-muted dark:text-brand-slate hover:text-brand-gold transition-colors font-bold text-sm underline">Email</a>
+      <a href="https://wa.me/5531993404537" class="text-light-muted dark:text-brand-slate hover:text-brand-gold transition-colors font-bold text-sm underline">WhatsApp</a>
+    </div>
+  </div>
 </footer>
 
 <script>
+  // 1. Lenis Smooth Scroll
   const lenis = new Lenis({ duration: 1.2, easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), smooth: true });
   function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
   requestAnimationFrame(raf);
 
+  // 2. GSAP Core
   gsap.registerPlugin(ScrollTrigger);
   lenis.on('scroll', ScrollTrigger.update);
   gsap.ticker.add((time) => { lenis.raf(time * 1000); });
 
+  // 3. Theme Toggle
   const themeToggle = document.getElementById('theme-toggle');
   const html = document.documentElement;
   if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) html.classList.add('dark');
@@ -311,24 +437,24 @@
     localStorage.theme = html.classList.contains('dark') ? 'dark' : 'light';
   });
 
+  // 4. Hero & Reveal Animations
   const tlHero = gsap.timeline({ defaults: { ease: "power4.out" } });
-  tlHero.fromTo(".hero-elem", { y: 40, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 1.2, stagger: 0.15 }, 0.2)
-        .fromTo(".hero-visual", { x: 40, autoAlpha: 0, rotationY: -10, transformPerspective: 1000 }, { x: 0, autoAlpha: 1, rotationY: 0, duration: 1.5 }, 0.5);
+  tlHero.fromTo(".hero-elem", { y: 40, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 1, stagger: 0.15 }, 0.2)
+        .fromTo(".hero-visual", { x: 40, autoAlpha: 0, rotationY: -10 }, { x: 0, autoAlpha: 1, rotationY: 0, duration: 1.5 }, 0.5);
 
   ScrollTrigger.batch(".reveal", {
     onEnter: batch => gsap.fromTo(batch, { y: 60, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 1, stagger: 0.15, ease: "power3.out" }),
     start: "top 85%",
   });
 
-  const cards = document.querySelectorAll('.tilt-element');
-  cards.forEach(card => {
+  // 5. 3D Tilt & Mouse Glow
+  document.querySelectorAll('.tilt-element').forEach(card => {
     card.addEventListener('mousemove', e => {
       const rect = card.getBoundingClientRect();
-      card.style.setProperty('--x', `${e.clientX - rect.left}px`);
-      card.style.setProperty('--y', `${e.clientY - rect.top}px`);
-      const centerX = rect.width / 2; const centerY = rect.height / 2;
-      const rotateX = ((e.clientY - rect.top - centerY) / centerY) * -2.5;
-      const rotateY = ((e.clientX - rect.left - centerX) / centerX) * 2.5;
+      const x = e.clientX - rect.left; const y = e.clientY - rect.top;
+      card.style.setProperty('--x', `${x}px`); card.style.setProperty('--y', `${y}px`);
+      const rotateX = ((y - rect.height/2) / (rect.height/2)) * -2.5; 
+      const rotateY = ((x - rect.width/2) / (rect.width/2)) * 2.5;
       gsap.to(card, { rotationX: rotateX, rotationY: rotateY, transformPerspective: 1000, duration: 0.4 });
     });
     card.addEventListener('mouseleave', () => gsap.to(card, { rotationX: 0, rotationY: 0, duration: 0.7, ease: "elastic.out(1, 0.3)" }));
