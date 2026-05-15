@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR" class="scroll-smooth">
+<html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -46,16 +46,22 @@
     };
   </script>
 
+  <script src="https://unpkg.com/@studio-freight/lenis@1.0.39/dist/lenis.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
   <style>
     /* ── Variáveis e Transições Base ───────────────────────────────── */
     :root {
-      --ease-spring: cubic-bezier(0.25, 1, 0.5, 1);
       --transition-slow: 0.5s;
     }
     
     body {
-      transition: background-color var(--transition-slow) var(--ease-spring), color var(--transition-slow);
+      transition: background-color var(--transition-slow) ease, color var(--transition-slow) ease;
     }
+
+    /* Oculta os elementos do reveal para o GSAP animá-los sem piscar */
+    .reveal { visibility: hidden; }
 
     /* ── Noise Overlay (Discreto) ──────────────────────────────────── */
     .noise-bg::before {
@@ -69,7 +75,7 @@
     .bento-card {
       position: relative;
       border-radius: 1.25rem;
-      transition: transform 0.4s var(--ease-spring), border-color 0.4s, box-shadow 0.4s;
+      transition: border-color 0.4s, box-shadow 0.4s;
       overflow: hidden;
       transform-style: preserve-3d;
       will-change: transform;
@@ -104,16 +110,6 @@
     
     .card-content { position: relative; z-index: 1; }
 
-    /* ── Animações (Intersection Observer & Gráficos) ──────────────── */
-    .reveal { opacity: 0; transform: translateY(30px); transition: all 0.8s var(--ease-spring); }
-    .reveal.visible { opacity: 1; transform: translateY(0); }
-
-    .bar-anim { animation: barRise 1.6s var(--ease-spring) forwards; transform-origin: bottom; transform: scaleY(0); }
-    @keyframes barRise { to { transform: scaleY(1); } }
-    .line-draw { stroke-dasharray: 400; stroke-dashoffset: 400; animation: lineDraw 2s ease forwards 0.4s; }
-    @keyframes lineDraw { to { stroke-dashoffset: 0; } }
-    @keyframes pulse-green { 0%, 100% { box-shadow: 0 0 0 0 rgba(37,211,102,.5); } 50% { box-shadow: 0 0 0 6px rgba(37,211,102,0); } }
-
     /* ── Tipografia e Linhas ───────────────────────────────────────── */
     .gold-rule { display: inline-block; width: 48px; height: 2px; background: #c9a84c; border-radius: 2px; }
     .gold-divider { height: 1px; background: linear-gradient(90deg, transparent, rgba(201,168,76,.4), transparent); }
@@ -126,12 +122,21 @@
     }
     .btn-wa:hover { background: #1da851; transform: translateY(-2px); box-shadow: 0 6px 20px rgba(37,211,102,.4); }
 
-    /* Scrollbar */
+    /* Pulse e Scrollbar */
+    @keyframes pulse-green { 0%, 100% { box-shadow: 0 0 0 0 rgba(37,211,102,.5); } 50% { box-shadow: 0 0 0 6px rgba(37,211,102,0); } }
+    
     ::-webkit-scrollbar { width: 8px; }
     .dark ::-webkit-scrollbar-track { background: #0B1527; }
     .dark ::-webkit-scrollbar-thumb { background: rgba(201,168,76,.3); border-radius: 4px; }
     .light ::-webkit-scrollbar-track { background: #F8FAFC; }
     .light ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 4px; }
+    
+    /* Configuração padrão do Lenis */
+    html.lenis, html.lenis body { height: auto; }
+    .lenis.lenis-smooth { scroll-behavior: auto !important; }
+    .lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
+    .lenis.lenis-stopped { overflow: hidden; }
+    .lenis.lenis-scrolling iframe { pointer-events: none; }
   </style>
 </head>
 <body class="noise-bg bg-light-bg dark:bg-brand-navy text-light-text dark:text-slate-200 font-body relative">
@@ -139,7 +144,7 @@
 <nav class="fixed top-0 w-full z-50 bg-white/80 dark:bg-brand-navy/90 backdrop-blur-md border-b border-light-border dark:border-white/5 transition-colors duration-500">
   <div class="max-w-6xl mx-auto px-6 h-20 flex items-center justify-between">
     
-    <a href="#" class="flex items-center gap-3">
+    <a href="#" class="flex items-center gap-3 nav-item">
       <div class="w-10 h-10 rounded-lg flex items-center justify-center bg-gradient-to-br from-brand-surfaceElevated to-brand-gold shadow-md">
         <svg viewBox="0 0 24 24" fill="none" class="w-5 h-5 text-white" xmlns="http://www.w3.org/2000/svg">
           <path d="M3 18l4-8 4 4 4-6 4 5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -156,16 +161,16 @@
     </a>
 
     <div class="hidden md:flex items-center gap-8">
-      <a href="#solucoes" class="text-sm font-medium text-light-muted dark:text-brand-slate hover:text-brand-gold dark:hover:text-white transition-colors">Soluções</a>
-      <a href="#especialista" class="text-sm font-medium text-light-muted dark:text-brand-slate hover:text-brand-gold dark:hover:text-white transition-colors">Especialista</a>
-      <a href="#certificacoes" class="text-sm font-medium text-light-muted dark:text-brand-slate hover:text-brand-gold dark:hover:text-white transition-colors">Certificações</a>
+      <a href="#solucoes" class="nav-item text-sm font-medium text-light-muted dark:text-brand-slate hover:text-brand-gold dark:hover:text-white transition-colors">Soluções</a>
+      <a href="#especialista" class="nav-item text-sm font-medium text-light-muted dark:text-brand-slate hover:text-brand-gold dark:hover:text-white transition-colors">Especialista</a>
+      <a href="#certificacoes" class="nav-item text-sm font-medium text-light-muted dark:text-brand-slate hover:text-brand-gold dark:hover:text-white transition-colors">Certificações</a>
       
-      <button id="theme-toggle" class="relative p-2 rounded-full hover:bg-slate-100 dark:hover:bg-white/10 transition-colors focus:outline-none" aria-label="Toggle Theme">
+      <button id="theme-toggle" class="nav-item relative p-2 rounded-full hover:bg-slate-100 dark:hover:bg-white/10 transition-colors focus:outline-none" aria-label="Toggle Theme">
         <svg id="icon-sun" class="w-5 h-5 text-brand-gold hidden dark:block" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
         <svg id="icon-moon" class="w-5 h-5 text-brand-surfaceElevated dark:hidden" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
       </button>
 
-      <a href="https://wa.me/5531993404537" target="_blank" class="btn-wa px-5 py-2.5 text-sm">
+      <a href="https://wa.me/5531993404537" target="_blank" class="nav-item btn-wa px-5 py-2.5 text-sm">
         <svg viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
         Orçamento Gratuito
       </a>
@@ -179,31 +184,31 @@
   <div class="max-w-6xl mx-auto px-6 w-full relative z-10">
     <div class="flex flex-col lg:flex-row items-center gap-16">
       
-      <div class="flex-1 reveal">
-        <div class="flex items-center gap-3 mb-6">
+      <div class="flex-1 hero-content">
+        <div class="flex items-center gap-3 mb-6 hero-elem">
           <span class="gold-rule"></span>
           <span class="text-xs font-bold tracking-widest uppercase text-brand-gold">Sites · Dashboards · Segurança</span>
         </div>
 
-        <h1 class="font-display text-light-text dark:text-white mb-6 leading-tight" style="font-size: clamp(2.4rem, 5vw, 4rem);">
+        <h1 class="font-display text-light-text dark:text-white mb-6 leading-tight hero-elem" style="font-size: clamp(2.4rem, 5vw, 4rem);">
           Decisões <em class="text-brand-gold not-italic font-black">inteligentes</em>,<br/>
           presença digital segura.
         </h1>
 
-        <p class="text-light-muted dark:text-brand-slate text-lg mb-10 max-w-lg leading-relaxed">
+        <p class="text-light-muted dark:text-brand-slate text-lg mb-10 max-w-lg leading-relaxed hero-elem">
           Dashboards, segurança digital, processos documentados e web —
           soluções completas para empresas que querem crescer com
           <strong class="text-light-text dark:text-white font-semibold">clareza, controle e confiança.</strong>
         </p>
 
-        <div class="flex flex-wrap gap-4 mb-12">
+        <div class="flex flex-wrap gap-4 mb-12 hero-elem">
           <a href="https://wa.me/5531993404537" class="btn-wa px-7 py-3.5 text-base">Solicitar diagnóstico gratuito</a>
           <a href="#solucoes" class="inline-flex items-center justify-center px-7 py-3.5 rounded-md border-2 border-brand-gold/50 text-brand-gold font-semibold hover:bg-brand-gold/10 transition-colors">
             Ver soluções
           </a>
         </div>
 
-        <div class="flex flex-wrap gap-4">
+        <div class="flex flex-wrap gap-4 hero-elem">
           <div class="bento-card px-5 py-3 text-center border-none dark:border-solid dark:border-white/5 bg-white shadow-sm dark:bg-brand-surfaceElevated/50">
             <span class="font-display text-2xl font-bold text-brand-gold block">+50</span>
             <span class="text-xs text-light-muted dark:text-brand-slate">Projetos entregues</span>
@@ -219,7 +224,7 @@
         </div>
       </div>
 
-      <div class="flex-1 w-full max-w-lg reveal" style="transition-delay: 0.2s;">
+      <div class="flex-1 w-full max-w-lg hero-visual">
         <div class="bento-card p-6 tilt-element">
           <div class="glow-overlay"></div>
           <div class="card-content">
@@ -236,14 +241,14 @@
               <line x1="0" y1="60" x2="320" y2="60" stroke="currentColor" class="text-slate-200 dark:text-white/5" stroke-width="1"/>
               <line x1="0" y1="90" x2="320" y2="90" stroke="currentColor" class="text-slate-200 dark:text-white/5" stroke-width="1"/>
               
-              <rect x="12" y="60" width="30" height="50" rx="3" fill="#1e4080" class="bar-anim" style="animation-delay:.1s"/>
-              <rect x="62" y="45" width="30" height="65" rx="3" fill="#1e4080" class="bar-anim" style="animation-delay:.2s"/>
-              <rect x="112" y="30" width="30" height="80" rx="3" fill="#c9a84c" class="bar-anim" style="animation-delay:.3s; opacity: 0.8;"/>
-              <rect x="162" y="40" width="30" height="70" rx="3" fill="#1e4080" class="bar-anim" style="animation-delay:.4s"/>
-              <rect x="212" y="20" width="30" height="90" rx="3" fill="#c9a84c" class="bar-anim" style="animation-delay:.5s; opacity: 0.9;"/>
-              <rect x="262" y="10" width="30" height="100" rx="3" fill="#c9a84c" class="bar-anim" style="animation-delay:.6s"/>
+              <rect x="12" y="60" width="30" height="50" rx="3" fill="#1e4080" class="gsap-bar"/>
+              <rect x="62" y="45" width="30" height="65" rx="3" fill="#1e4080" class="gsap-bar"/>
+              <rect x="112" y="30" width="30" height="80" rx="3" fill="#c9a84c" class="gsap-bar opacity-80"/>
+              <rect x="162" y="40" width="30" height="70" rx="3" fill="#1e4080" class="gsap-bar"/>
+              <rect x="212" y="20" width="30" height="90" rx="3" fill="#c9a84c" class="gsap-bar opacity-90"/>
+              <rect x="262" y="10" width="30" height="100" rx="3" fill="#c9a84c" class="gsap-bar"/>
               
-              <polyline points="27,60 77,45 127,30 177,40 227,18 277,8" fill="none" stroke="#c9a84c" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="line-draw"/>
+              <polyline points="27,60 77,45 127,30 177,40 227,18 277,8" fill="none" stroke="#c9a84c" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="gsap-line"/>
             </svg>
 
             <div class="grid grid-cols-3 gap-3">
@@ -286,7 +291,7 @@
       <p class="text-light-muted dark:text-brand-slate max-w-xl mx-auto text-lg">Foco primário em criação web, inteligência de dados e segurança, apoiado por infraestrutura robusta.</p>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 section-grid">
       
       <div class="bento-card p-8 md:col-span-1 reveal tilt-element">
         <div class="glow-overlay"></div>
@@ -299,7 +304,7 @@
         </div>
       </div>
 
-      <div class="bento-card p-8 md:col-span-1 reveal tilt-element" style="transition-delay: 0.1s;">
+      <div class="bento-card p-8 md:col-span-1 reveal tilt-element">
         <div class="glow-overlay"></div>
         <div class="card-content">
           <div class="w-12 h-12 rounded-xl border border-brand-gold/30 bg-brand-gold/10 flex items-center justify-center mb-6">
@@ -310,7 +315,7 @@
         </div>
       </div>
 
-      <div class="bento-card p-8 md:col-span-1 reveal tilt-element" style="transition-delay: 0.2s;">
+      <div class="bento-card p-8 md:col-span-1 reveal tilt-element">
         <div class="glow-overlay"></div>
         <div class="card-content">
           <div class="w-12 h-12 rounded-xl border border-brand-gold/30 bg-brand-gold/10 flex items-center justify-center mb-6">
@@ -332,7 +337,7 @@
         </div>
       </div>
 
-      <div class="bento-card p-6 md:col-span-1 reveal tilt-element" style="transition-delay: 0.1s;">
+      <div class="bento-card p-6 md:col-span-1 reveal tilt-element">
         <div class="glow-overlay"></div>
         <div class="card-content flex items-center gap-4">
           <div class="p-3 rounded-lg bg-slate-100 dark:bg-white/5 text-light-text dark:text-white"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path></svg></div>
@@ -343,13 +348,13 @@
         </div>
       </div>
 
-      <div class="bento-card p-6 md:col-span-1 reveal tilt-element" style="transition-delay: 0.2s;">
+      <div class="bento-card p-6 md:col-span-1 reveal tilt-element">
         <div class="glow-overlay"></div>
         <div class="card-content flex items-center gap-4">
           <div class="p-3 rounded-lg bg-slate-100 dark:bg-white/5 text-light-text dark:text-white"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg></div>
           <div>
             <h4 class="font-bold text-light-text dark:text-white">Mapeamento BPMN</h4>
-            <p class="text-xs text-light-muted dark:text-brand-slate mt-1">Desenho de POPs e Fluxogramas AS-IS/TO-BE.</p>
+            <p class="text-xs text-light-muted dark:text-brand-slate mt-1">Desenho de POPs e Fluxogramas.</p>
           </div>
         </div>
       </div>
@@ -360,7 +365,7 @@
 
 <section id="especialista" class="py-24">
   <div class="max-w-5xl mx-auto px-6">
-    <div class="flex flex-col lg:flex-row items-center gap-14">
+    <div class="flex flex-col lg:flex-row items-center gap-14 section-grid">
       
       <div class="flex-shrink-0 reveal">
         <div class="relative">
@@ -376,7 +381,7 @@
         </div>
       </div>
 
-      <div class="flex-1 reveal" style="transition-delay: 0.2s;">
+      <div class="flex-1 reveal">
         <div class="flex items-center gap-3 mb-4">
           <span class="gold-rule"></span>
           <span class="text-xs font-bold tracking-widest uppercase text-brand-gold">Sobre o Especialista</span>
@@ -419,11 +424,11 @@
 <section id="certificacoes" class="py-24 bg-slate-50 dark:bg-brand-surface border-y border-slate-200 dark:border-white/5">
   <div class="max-w-6xl mx-auto px-6">
 
-    <div class="text-center mb-16 reveal">
+    <div class="text-center mb-16 reveal-header">
       <h2 class="font-display text-4xl md:text-5xl font-black text-light-text dark:text-white">Conhecimento Comprovado</h2>
     </div>
 
-    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 cert-grid">
       
       <div class="bento-card p-6 reveal tilt-element">
         <svg viewBox="0 0 24 24" fill="none" class="w-8 h-8 mb-4"><path d="M12 2L3 7v5c0 5.25 4.5 9.74 9 11 4.5-1.26 9-5.75 9-11V7L12 2z" stroke="#ee441c" stroke-width="2" stroke-linejoin="round"/></svg>
@@ -432,21 +437,21 @@
         <span class="inline-block px-3 py-1 bg-red-500/10 text-red-500 text-[10px] font-bold rounded-md">Válido até 2028</span>
       </div>
 
-      <div class="bento-card p-6 reveal tilt-element" style="transition-delay: 0.1s;">
+      <div class="bento-card p-6 reveal tilt-element">
         <svg viewBox="0 0 24 24" fill="none" stroke="#4285F4" stroke-width="2" class="w-8 h-8 mb-4"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round"></path></svg>
         <p class="text-light-text dark:text-white text-base font-bold leading-tight mb-2">Google Cybersecurity</p>
         <p class="text-light-muted dark:text-brand-slate text-[10px] uppercase mb-4 font-semibold">PROFESSIONAL · JAN/2026</p>
         <span class="inline-block px-3 py-1 bg-blue-500/10 text-blue-500 text-[10px] font-bold rounded-md">Coursera</span>
       </div>
 
-      <div class="bento-card p-6 reveal tilt-element" style="transition-delay: 0.2s;">
+      <div class="bento-card p-6 reveal tilt-element">
         <svg viewBox="0 0 24 24" fill="none" stroke="#8854ff" stroke-width="2" class="w-8 h-8 mb-4"><path stroke-linecap="round" stroke-linejoin="round" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
         <p class="text-light-text dark:text-white text-base font-bold leading-tight mb-2">Pre Security Certificate</p>
         <p class="text-light-muted dark:text-brand-slate text-[10px] uppercase mb-4 font-semibold">TRYHACKME · NOV/2025</p>
         <span class="inline-block px-3 py-1 bg-purple-500/10 text-purple-500 text-[10px] font-bold rounded-md">Válido até 2028</span>
       </div>
 
-      <div class="bento-card p-6 reveal tilt-element" style="transition-delay: 0.3s;">
+      <div class="bento-card p-6 reveal tilt-element">
         <svg viewBox="0 0 24 24" fill="none" stroke="#c9a84c" stroke-width="2" class="w-8 h-8 mb-4"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
         <p class="text-light-text dark:text-white text-base font-bold leading-tight mb-2">Formação Looker Studio</p>
         <p class="text-light-muted dark:text-brand-slate text-[10px] uppercase mb-4 font-semibold">ALURA · ABR/2024</p>
@@ -455,58 +460,56 @@
 
     </div>
 
-    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 reveal" style="transition-delay: 0.4s;">
-      
-      <div class="bento-card p-4 text-center">
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 cert-grid-compact">
+      <div class="bento-card p-4 text-center reveal">
         <p class="text-light-text dark:text-white text-xs font-bold mb-1">Cisco Cybersecurity</p>
         <p class="text-light-muted dark:text-brand-slate text-[10px]">dez/2024</p>
       </div>
-      <div class="bento-card p-4 text-center">
+      <div class="bento-card p-4 text-center reveal">
         <p class="text-light-text dark:text-white text-xs font-bold mb-1">FIAP Cybersecurity</p>
         <p class="text-light-muted dark:text-brand-slate text-[10px]">mai/2025</p>
       </div>
-      <div class="bento-card p-4 text-center">
+      <div class="bento-card p-4 text-center reveal">
         <p class="text-light-text dark:text-white text-xs font-bold mb-1">Bradesco LGPD</p>
         <p class="text-light-muted dark:text-brand-slate text-[10px]">abr/2024</p>
       </div>
-      <div class="bento-card p-4 text-center">
+      <div class="bento-card p-4 text-center reveal">
         <p class="text-light-text dark:text-white text-xs font-bold mb-1">Data Science Academy</p>
         <p class="text-light-muted dark:text-brand-slate text-[10px]">Ciência de Dados</p>
       </div>
-      <div class="bento-card p-4 text-center">
+      <div class="bento-card p-4 text-center reveal">
         <p class="text-light-text dark:text-white text-xs font-bold mb-1">SAP Activate</p>
         <p class="text-light-muted dark:text-brand-slate text-[10px]">Alura · jul/2024</p>
       </div>
-      <div class="bento-card p-4 text-center">
+      <div class="bento-card p-4 text-center reveal">
         <p class="text-light-text dark:text-white text-xs font-bold mb-1">Blip Academy IA</p>
         <p class="text-light-muted dark:text-brand-slate text-[10px]">mar/2025</p>
       </div>
 
-      <div class="bento-card p-4 text-center hidden lg:block">
+      <div class="bento-card p-4 text-center hidden lg:block reveal">
         <p class="text-light-text dark:text-white text-xs font-bold mb-1">Cisco Endpoint Sec.</p>
         <p class="text-light-muted dark:text-brand-slate text-[10px]">set/2024</p>
       </div>
-      <div class="bento-card p-4 text-center hidden lg:block">
+      <div class="bento-card p-4 text-center hidden lg:block reveal">
         <p class="text-light-text dark:text-white text-xs font-bold mb-1">SQL & SQLite</p>
         <p class="text-light-muted dark:text-brand-slate text-[10px]">Alura · mar/2024</p>
       </div>
-      <div class="bento-card p-4 text-center hidden lg:block">
+      <div class="bento-card p-4 text-center hidden lg:block reveal">
         <p class="text-light-text dark:text-white text-xs font-bold mb-1">Infra TI</p>
         <p class="text-light-muted dark:text-brand-slate text-[10px]">FIAP · dez/2022</p>
       </div>
-      <div class="bento-card p-4 text-center hidden lg:block">
+      <div class="bento-card p-4 text-center hidden lg:block reveal">
         <p class="text-light-text dark:text-white text-xs font-bold mb-1">SAP Geral</p>
         <p class="text-light-muted dark:text-brand-slate text-[10px]">Alura · jul/2024</p>
       </div>
-      <div class="bento-card p-4 text-center hidden lg:block">
+      <div class="bento-card p-4 text-center hidden lg:block reveal">
         <p class="text-light-text dark:text-white text-xs font-bold mb-1">Looker Studio</p>
         <p class="text-light-muted dark:text-brand-slate text-[10px]">Alura · abr/2024</p>
       </div>
-      <div class="bento-card p-4 text-center hidden lg:block">
+      <div class="bento-card p-4 text-center hidden lg:block reveal">
         <p class="text-light-text dark:text-white text-xs font-bold mb-1">Lógica Prog.</p>
         <p class="text-light-muted dark:text-brand-slate text-[10px]">Certificate</p>
       </div>
-
     </div>
 
   </div>
@@ -515,17 +518,17 @@
 <section class="py-24 bg-white dark:bg-[#070f1e]">
   <div class="max-w-6xl mx-auto px-6 text-center">
     
-    <div class="flex items-center justify-center gap-3 mb-4 reveal">
+    <div class="flex items-center justify-center gap-3 mb-4 process-header">
       <span class="gold-rule"></span>
       <span class="text-xs font-bold tracking-widest uppercase text-brand-gold">Como Funciona</span>
       <span class="gold-rule"></span>
     </div>
     
-    <h2 class="font-display text-4xl md:text-5xl font-black mb-20 text-light-text dark:text-white reveal">
+    <h2 class="font-display text-4xl md:text-5xl font-black mb-20 text-light-text dark:text-white process-header">
       Do primeiro contato à <em class="text-brand-gold not-italic">entrega com resultado</em>
     </h2>
 
-    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
+    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-8 process-steps">
       
       <div class="reveal tilt-element relative">
         <div class="w-16 h-16 rounded-full mx-auto mb-6 flex items-center justify-center bg-gradient-to-b from-brand-surfaceElevated to-brand-gold shadow-lg relative z-10 border-2 border-white dark:border-brand-navy">
@@ -535,7 +538,7 @@
         <p class="text-light-muted dark:text-brand-slate text-sm leading-relaxed max-w-xs mx-auto">Conversa inicial para entender seu negócio, dores e objetivos — sem jargão técnico.</p>
       </div>
 
-      <div class="reveal tilt-element relative" style="transition-delay: 0.1s;">
+      <div class="reveal tilt-element relative">
         <div class="w-16 h-16 rounded-full mx-auto mb-6 flex items-center justify-center bg-gradient-to-b from-brand-surfaceElevated to-brand-gold shadow-lg relative z-10 border-2 border-white dark:border-brand-navy">
           <span class="font-display text-2xl font-bold text-white">2</span>
         </div>
@@ -543,7 +546,7 @@
         <p class="text-light-muted dark:text-brand-slate text-sm leading-relaxed max-w-xs mx-auto">Solução personalizada com escopo, prazo e investimento claros — sem surpresas.</p>
       </div>
 
-      <div class="reveal tilt-element relative" style="transition-delay: 0.2s;">
+      <div class="reveal tilt-element relative">
         <div class="w-16 h-16 rounded-full mx-auto mb-6 flex items-center justify-center bg-gradient-to-b from-brand-surfaceElevated to-brand-gold shadow-lg relative z-10 border-2 border-white dark:border-brand-navy">
           <span class="font-display text-2xl font-bold text-white">3</span>
         </div>
@@ -551,7 +554,7 @@
         <p class="text-light-muted dark:text-brand-slate text-sm leading-relaxed max-w-xs mx-auto">Execução com atualizações frequentes e espaço para ajustes ao longo do caminho.</p>
       </div>
 
-      <div class="reveal tilt-element relative" style="transition-delay: 0.3s;">
+      <div class="reveal tilt-element relative">
         <div class="w-16 h-16 rounded-full mx-auto mb-6 flex items-center justify-center bg-gradient-to-b from-brand-surfaceElevated to-brand-gold shadow-lg relative z-10 border-2 border-white dark:border-brand-navy">
           <span class="font-display text-2xl font-bold text-white">4</span>
         </div>
@@ -564,24 +567,24 @@
 </section>
 
 <section class="py-24 bg-brand-surfaceElevated dark:bg-brand-navy">
-  <div class="max-w-4xl mx-auto px-6 text-center reveal">
-    <p class="text-[10px] font-bold tracking-widest uppercase text-brand-gold mb-4">PRONTO PARA COMEÇAR?</p>
+  <div class="max-w-4xl mx-auto px-6 text-center cta-content">
+    <p class="text-[10px] font-bold tracking-widest uppercase text-brand-gold mb-4 reveal">PRONTO PARA COMEÇAR?</p>
     
-    <h2 class="font-display text-4xl md:text-5xl lg:text-6xl text-white font-black leading-tight mb-8">
+    <h2 class="font-display text-4xl md:text-5xl lg:text-6xl text-white font-black leading-tight mb-8 reveal">
       Seu negócio merece<br/>
       <em class="text-brand-gold font-bold italic">soluções que funcionam de verdade.</em>
     </h2>
     
-    <p class="text-brand-slate text-lg mb-10 max-w-2xl mx-auto">
+    <p class="text-brand-slate text-lg mb-10 max-w-2xl mx-auto reveal">
       Entre em contato agora e receba um diagnóstico gratuito — seja para dados, segurança, processos ou presença digital. A primeira conversa é sempre sem compromisso.
     </p>
     
-    <a href="https://wa.me/5531993404537" target="_blank" class="btn-wa px-8 py-4 text-lg mx-auto inline-flex shadow-xl shadow-green-500/20">
+    <a href="https://wa.me/5531993404537" target="_blank" class="btn-wa px-8 py-4 text-lg mx-auto inline-flex shadow-xl shadow-green-500/20 reveal">
       <svg viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
       Falar com Raphael agora
     </a>
     
-    <div class="mt-6 flex items-center justify-center gap-2 text-xs text-brand-slate">
+    <div class="mt-6 flex items-center justify-center gap-2 text-xs text-brand-slate reveal">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-4 h-4"><circle cx="12" cy="12" r="10"/><path stroke-linecap="round" d="M12 6v6l4 2"/></svg>
       Resposta em até 1h durante o horário comercial
     </div>
@@ -592,7 +595,7 @@
   <div class="max-w-6xl mx-auto px-6 py-14">
     <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-10">
       
-      <div>
+      <div class="footer-elem">
         <div class="flex items-center gap-3 mb-3">
           <div class="w-9 h-9 rounded flex items-center justify-center bg-gradient-to-br from-brand-surfaceElevated to-brand-gold">
             <svg viewBox="0 0 24 24" fill="none" class="w-5 h-5 text-white" xmlns="http://www.w3.org/2000/svg"><path d="M3 18l4-8 4 4 4-6 4 5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="7" cy="10" r="1.5" fill="#c9a84c"/><circle cx="11" cy="14" r="1.5" fill="#c9a84c"/><circle cx="15" cy="8" r="1.5" fill="#c9a84c"/><circle cx="19" cy="13" r="1.5" fill="#c9a84c"/></svg>
@@ -607,7 +610,7 @@
         </p>
       </div>
 
-      <div class="space-y-4">
+      <div class="space-y-4 footer-elem">
         <p class="text-[10px] text-light-muted dark:text-brand-slate uppercase font-bold tracking-widest mb-4">Contato</p>
         
         <a href="https://wa.me/5531993404537" class="flex items-center gap-3 group no-underline">
@@ -641,11 +644,34 @@
 </footer>
 
 <script>
-  // ── Theme Toggle Logic ────────────────────────────────────
+  // 1. INICIALIZAÇÃO LENIS (SMOOTH SCROLL)
+  const lenis = new Lenis({
+    duration: 1.2,
+    easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+    direction: 'vertical',
+    gestureDirection: 'vertical',
+    smooth: true,
+    mouseMultiplier: 1,
+    smoothTouch: false,
+    touchMultiplier: 2,
+  });
+
+  function raf(time) {
+    lenis.raf(time);
+    requestAnimationFrame(raf);
+  }
+  requestAnimationFrame(raf);
+
+  // 2. SINCRONIZAR LENIS COM GSAP SCROLLTRIGGER
+  gsap.registerPlugin(ScrollTrigger);
+  lenis.on('scroll', ScrollTrigger.update);
+  gsap.ticker.add((time) => { lenis.raf(time * 1000); });
+  gsap.ticker.lagSmoothing(0);
+
+  // 3. TEMA (LIGHT/DARK)
   const themeToggle = document.getElementById('theme-toggle');
   const html = document.documentElement;
-
-  // Verifica preferência salva
+  
   if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
     html.classList.add('dark');
   } else {
@@ -654,53 +680,57 @@
 
   themeToggle.addEventListener('click', () => {
     html.classList.toggle('dark');
-    // Animação no botão
-    themeToggle.style.transform = 'scale(0.8)';
-    setTimeout(() => themeToggle.style.transform = 'scale(1)', 150);
-    
-    if (html.classList.contains('dark')) {
-      localStorage.theme = 'dark';
-    } else {
-      localStorage.theme = 'light';
-    }
+    gsap.fromTo(themeToggle, { scale: 0.8 }, { scale: 1, duration: 0.3, ease: "back.out(1.7)" });
+    localStorage.theme = html.classList.contains('dark') ? 'dark' : 'light';
   });
 
-  // ── Intersection Observer (Revelar Elementos) ──────────────
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('visible');
-        observer.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
-
-  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
-
-  // ── Bento Cards 3D Tilt & Glow Effect (Vanilla JS) ────────
-  const cards = document.querySelectorAll('.tilt-element');
+  // 4. ANIMAÇÕES GSAP (TIMELINES E SCROLLTRIGGER)
   
+  // -- Nav
+  gsap.from(".nav-item", { y: -20, opacity: 0, duration: 1, stagger: 0.1, ease: "power3.out", delay: 0.2 });
+
+  // -- Hero Load
+  const tlHero = gsap.timeline({ defaults: { ease: "power4.out" } });
+  tlHero.fromTo(".hero-elem", { y: 40, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 1.2, stagger: 0.15 }, 0.5)
+        .fromTo(".hero-visual", { x: 40, autoAlpha: 0, rotationY: -10, transformPerspective: 1000 }, { x: 0, autoAlpha: 1, rotationY: 0, duration: 1.5 }, 0.8);
+
+  // -- Gráfico Animado no Hero (Animado dinamicamente pelo GSAP)
+  gsap.fromTo(".gsap-bar", 
+    { scaleY: 0 }, 
+    { scaleY: 1, duration: 1.5, stagger: 0.1, ease: "power3.out", transformOrigin: "bottom", delay: 1.5 }
+  );
+  gsap.fromTo(".gsap-line", 
+    { strokeDasharray: 400, strokeDashoffset: 400 }, 
+    { strokeDashoffset: 0, duration: 2, ease: "power2.inOut", delay: 1.8 }
+  );
+
+  // -- Revelar Elementos Genéricos (Soluções, Especialista, CTA)
+  ScrollTrigger.batch(".reveal", {
+    onEnter: batch => gsap.fromTo(batch, { y: 60, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 1, stagger: 0.15, ease: "power3.out", overwrite: true }),
+    start: "top 85%",
+  });
+
+  // 5. EFEITO 3D E GLOW (VANILLA JS PARA PERFORMANCE)
+  const cards = document.querySelectorAll('.tilt-element');
   cards.forEach(card => {
     card.addEventListener('mousemove', e => {
       const rect = card.getBoundingClientRect();
       const x = e.clientX - rect.left;
       const y = e.clientY - rect.top;
       
-      // Atualiza coordenadas do Glow
       card.style.setProperty('--x', `${x}px`);
       card.style.setProperty('--y', `${y}px`);
 
-      // Calcula Tilt
       const centerX = rect.width / 2;
       const centerY = rect.height / 2;
-      const rotateX = ((y - centerY) / centerY) * -3; // intensidade do tilt
-      const rotateY = ((x - centerX) / centerX) * 3;
+      const rotateX = ((y - centerY) / centerY) * -2.5; 
+      const rotateY = ((x - centerX) / centerX) * 2.5;
 
-      card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-5px)`;
+      gsap.to(card, { rotationX: rotateX, rotationY: rotateY, transformPerspective: 1000, duration: 0.4, ease: "power2.out" });
     });
 
     card.addEventListener('mouseleave', () => {
-      card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0px)';
+      gsap.to(card, { rotationX: 0, rotationY: 0, duration: 0.7, ease: "elastic.out(1, 0.3)" });
     });
   });
 </script>
