@@ -64,14 +64,14 @@
 
     /* Bento Cards otimizados para GPU */
     .bento-card {
-      position: relative; border-radius: 1.25rem; transition: border-color 0.3s ease;
+      position: relative; border-radius: 1.25rem; transition: border-color 0.3s ease, box-shadow 0.3s ease;
       overflow: hidden; transform-style: preserve-3d;
       will-change: transform; /* Hint para a placa de vídeo */
     }
     
-    /* Removido o backdrop-filter pesado, usando cor sólida luxuosa */
+    /* Ajuste fino nas bordas para garantir visibilidade no Light Mode */
     .dark .bento-card { background: rgba(13, 28, 54, 0.95); border: 1px solid rgba(255, 255, 255, 0.05); }
-    .light .bento-card { background: #FFFFFF; border: 1px solid #E2E8F0; box-shadow: 0 4px 20px rgba(0,0,0,0.03); }
+    .light .bento-card { background: #FFFFFF; border: 1px solid #CBD5E1; box-shadow: 0 4px 20px rgba(0,0,0,0.04); }
     .bento-card:hover { border-color: #c9a84c; }
 
     /* Mouse Glow - Utiliza GPU Acceleration */
@@ -106,7 +106,7 @@
 <body class="noise-bg bg-light-bg dark:bg-brand-navy text-light-text dark:text-slate-200 font-body relative">
 
 <!-- NAV -->
-<nav class="fixed top-0 w-full z-50 bg-white/80 dark:bg-brand-navy/90 backdrop-blur-md border-b border-light-border dark:border-white/5 transition-colors duration-500">
+<nav class="fixed top-0 w-full z-50 bg-white/80 dark:bg-brand-navy/90 backdrop-blur-md border-b border-slate-200 dark:border-white/5 transition-colors duration-500">
   <div class="max-w-6xl mx-auto px-6 h-20 flex items-center justify-between">
     
     <a href="#" class="flex items-center gap-3">
@@ -165,15 +165,15 @@
         </div>
 
         <div class="flex flex-wrap gap-4 hero-elem">
-          <div class="bento-card px-5 py-3 text-center border-none dark:border-solid dark:border-white/5 bg-white shadow-sm dark:bg-brand-surfaceElevated/50">
+          <div class="bento-card px-5 py-3 text-center">
             <span class="font-display text-2xl font-bold text-brand-gold block">+50</span>
             <span class="text-xs text-light-muted dark:text-brand-slate">Projetos entregues</span>
           </div>
-          <div class="bento-card px-5 py-3 text-center border-none dark:border-solid dark:border-white/5 bg-white shadow-sm dark:bg-brand-surfaceElevated/50">
+          <div class="bento-card px-5 py-3 text-center">
             <span class="font-display text-2xl font-bold text-brand-gold block">6</span>
             <span class="text-xs text-light-muted dark:text-brand-slate">Áreas de atuação</span>
           </div>
-          <div class="bento-card px-5 py-3 text-center border-none dark:border-solid dark:border-white/5 bg-white shadow-sm dark:bg-brand-surfaceElevated/50">
+          <div class="bento-card px-5 py-3 text-center">
             <span class="font-display text-2xl font-bold text-brand-gold block">100%</span>
             <span class="text-xs text-light-muted dark:text-brand-slate">Foco no resultado</span>
           </div>
@@ -199,11 +199,11 @@
             </div>
 
             <div class="grid grid-cols-2 gap-4 mb-6">
-              <div class="rounded-xl p-5 bg-slate-50 dark:bg-brand-navy/60 border border-slate-100 dark:border-white/5">
+              <div class="rounded-xl p-5 bg-white dark:bg-brand-navy/60 border border-slate-200 dark:border-white/5 shadow-sm">
                 <p class="text-[10px] text-light-muted dark:text-brand-slate uppercase font-bold mb-3 italic">Ticket Médio</p>
                 <p class="text-light-text dark:text-white font-bold text-2xl">R$ 4.820</p>
               </div>
-              <div class="rounded-xl p-5 bg-slate-50 dark:bg-brand-navy/60 border border-slate-100 dark:border-white/5">
+              <div class="rounded-xl p-5 bg-white dark:bg-brand-navy/60 border border-slate-200 dark:border-white/5 shadow-sm">
                 <p class="text-[10px] text-light-muted dark:text-brand-slate uppercase font-bold mb-3 italic">Conversão</p>
                 <p class="text-light-text dark:text-white font-bold text-2xl">34,7%</p>
               </div>
@@ -252,7 +252,7 @@
         </div>
       </div>
 
-      <div class="bento-card p-8 reveal tilt-element border-brand-gold/30">
+      <div class="bento-card p-8 reveal tilt-element">
         <div class="glow-overlay"></div>
         <div class="card-content">
           <div class="w-12 h-12 rounded-xl bg-brand-gold/10 flex items-center justify-center mb-6"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-6 h-6 text-brand-gold"><path d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" stroke-width="2"/></svg></div>
@@ -282,7 +282,7 @@
         <div class="glow-overlay"></div>
         <div class="card-content">
           <div class="w-12 h-12 rounded-xl bg-brand-gold/10 flex items-center justify-center mb-6"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-6 h-6 text-brand-gold"><path d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" stroke-width="2"/></svg></div>
-          <h3 class="font-display text-2xl font-bold mb-4 dark:text-white text-navy">Landing Pages</h4>
+          <h3 class="font-display text-2xl font-bold mb-4 dark:text-white text-navy">Landing Pages</h3>
           <p class="text-sm text-light-muted dark:text-brand-slate leading-relaxed mb-4">Páginas profissionais, responsivas e otimizadas com design moderno e foco total no seu objetivo.</p>
           <ul class="text-xs space-y-2 font-medium text-light-muted dark:text-brand-slate">
             <li>· Mobile-first & SEO</li>
@@ -291,7 +291,7 @@
         </div>
       </div>
 
-      <div class="bento-card p-8 reveal tilt-element border-brand-gold/30">
+      <div class="bento-card p-8 reveal tilt-element">
         <div class="glow-overlay"></div>
         <div class="card-content">
           <div class="w-12 h-12 rounded-xl bg-brand-gold/10 flex items-center justify-center mb-6"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-6 h-6 text-brand-gold"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" stroke-width="2"/></svg></div>
@@ -344,7 +344,7 @@
           <p>Essa combinação multidisciplinar garante entregas que geram resultado real. Cada projeto começa com um diagnóstico honesto e termina com acompanhamento até a solução operar sozinha.</p>
         </div>
 
-        <div class="mt-8 p-6 rounded-2xl bg-slate-50 dark:bg-white/5 border border-brand-gold/10">
+        <div class="mt-8 p-6 rounded-2xl bg-white dark:bg-white/5 border border-slate-200 dark:border-brand-gold/10 shadow-sm">
           <p class="text-[10px] font-bold tracking-widest uppercase text-brand-gold mb-4">Formação Acadêmica</p>
           <ul class="space-y-3">
             <li class="flex items-center gap-3 text-sm font-bold text-light-text dark:text-white"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-5 h-5 text-brand-gold"><path d="M12 14l9-5-9-5-9 5 9 5z" stroke-width="2"/><path d="M12 14l6.16-3.422A12.083 12.083 0 0121 21H3a12.083 12.083 0 012.84-10.422L12 14z" stroke-width="2"/></svg> Graduação em Segurança da Informação — Uninter</li>
@@ -353,11 +353,11 @@
         </div>
         
         <div class="flex flex-wrap gap-2 mt-6">
-          <span class="px-4 py-2 bg-slate-100 dark:bg-white/5 rounded-full text-xs font-bold">Python</span>
-          <span class="px-4 py-2 bg-slate-100 dark:bg-white/5 rounded-full text-xs font-bold">n8n</span>
-          <span class="px-4 py-2 bg-slate-100 dark:bg-white/5 rounded-full text-xs font-bold">SQL / BigQuery</span>
-          <span class="px-4 py-2 bg-slate-100 dark:bg-white/5 rounded-full text-xs font-bold">Looker Studio</span>
-          <span class="px-4 py-2 bg-slate-100 dark:bg-white/5 rounded-full text-xs font-bold">APIs REST</span>
+          <span class="px-4 py-2 bg-white dark:bg-white/5 border border-slate-200 dark:border-transparent shadow-sm rounded-full text-xs font-bold text-light-text dark:text-white">Python</span>
+          <span class="px-4 py-2 bg-white dark:bg-white/5 border border-slate-200 dark:border-transparent shadow-sm rounded-full text-xs font-bold text-light-text dark:text-white">n8n</span>
+          <span class="px-4 py-2 bg-white dark:bg-white/5 border border-slate-200 dark:border-transparent shadow-sm rounded-full text-xs font-bold text-light-text dark:text-white">SQL / BigQuery</span>
+          <span class="px-4 py-2 bg-white dark:bg-white/5 border border-slate-200 dark:border-transparent shadow-sm rounded-full text-xs font-bold text-light-text dark:text-white">Looker Studio</span>
+          <span class="px-4 py-2 bg-white dark:bg-white/5 border border-slate-200 dark:border-transparent shadow-sm rounded-full text-xs font-bold text-light-text dark:text-white">APIs REST</span>
         </div>
       </div>
     </div>
@@ -373,25 +373,25 @@
     </div>
 
     <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 reveal">
-      <div class="bento-card p-6 tilt-element"><svg viewBox="0 0 24 24" fill="none" class="w-8 h-8 mb-4 stroke-red-500"><path d="M12 2L3 7v5c0 5.25 4.5 9.74 9 11 4.5-1.26 9-5.75 9-11V7L12 2z" stroke-width="2"/></svg><p class="font-bold text-sm mb-1">Fortinet Certified Fundamentals</p><p class="text-[10px] text-brand-slate uppercase font-bold">FCF · fev/2026</p></div>
-      <div class="bento-card p-6 tilt-element"><svg viewBox="0 0 24 24" fill="none" class="w-8 h-8 mb-4 stroke-blue-500"><path d="M12 11a4 4 0 100-8 4 4 0 000 8z" stroke-width="2"/><path d="M12 11v8m0 0l-3-3m3 3l3-3" stroke-width="2"/></svg><p class="font-bold text-sm mb-1">Google Cybersecurity</p><p class="text-[10px] text-brand-slate uppercase font-bold">Professional · jan/2026</p></div>
-      <div class="bento-card p-6 tilt-element"><svg viewBox="0 0 24 24" fill="none" class="w-8 h-8 mb-4 stroke-purple-500"><path d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" stroke-width="2"/></svg><p class="font-bold text-sm mb-1">Pre Security Certificate</p><p class="text-[10px] text-brand-slate uppercase font-bold">TryHackMe · nov/2025</p></div>
-      <div class="bento-card p-6 tilt-element"><svg viewBox="0 0 24 24" fill="none" class="w-8 h-8 mb-4 stroke-brand-gold"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2" stroke-width="2"/></svg><p class="font-bold text-sm mb-1">Formação Looker Studio</p><p class="text-[10px] text-brand-slate uppercase font-bold">Alura · abr/2024</p></div>
+      <div class="bento-card p-6 tilt-element"><svg viewBox="0 0 24 24" fill="none" class="w-8 h-8 mb-4 stroke-red-500"><path d="M12 2L3 7v5c0 5.25 4.5 9.74 9 11 4.5-1.26 9-5.75 9-11V7L12 2z" stroke-width="2"/></svg><p class="font-bold text-sm mb-1 text-light-text dark:text-white">Fortinet Certified Fundamentals</p><p class="text-[10px] text-brand-slate uppercase font-bold">FCF · fev/2026</p></div>
+      <div class="bento-card p-6 tilt-element"><svg viewBox="0 0 24 24" fill="none" class="w-8 h-8 mb-4 stroke-blue-500"><path d="M12 11a4 4 0 100-8 4 4 0 000 8z" stroke-width="2"/><path d="M12 11v8m0 0l-3-3m3 3l3-3" stroke-width="2"/></svg><p class="font-bold text-sm mb-1 text-light-text dark:text-white">Google Cybersecurity</p><p class="text-[10px] text-brand-slate uppercase font-bold">Professional · jan/2026</p></div>
+      <div class="bento-card p-6 tilt-element"><svg viewBox="0 0 24 24" fill="none" class="w-8 h-8 mb-4 stroke-purple-500"><path d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" stroke-width="2"/></svg><p class="font-bold text-sm mb-1 text-light-text dark:text-white">Pre Security Certificate</p><p class="text-[10px] text-brand-slate uppercase font-bold">TryHackMe · nov/2025</p></div>
+      <div class="bento-card p-6 tilt-element"><svg viewBox="0 0 24 24" fill="none" class="w-8 h-8 mb-4 stroke-brand-gold"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2" stroke-width="2"/></svg><p class="font-bold text-sm mb-1 text-light-text dark:text-white">Formação Looker Studio</p><p class="text-[10px] text-brand-slate uppercase font-bold">Alura · abr/2024</p></div>
     </div>
 
     <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 reveal">
-      <div class="p-4 bg-white dark:bg-white/5 rounded-xl text-center border border-black/5"><p class="text-[10px] font-bold">Cisco Cybersecurity</p><p class="text-[8px] text-slate-500 uppercase">dez/2024</p></div>
-      <div class="p-4 bg-white dark:bg-white/5 rounded-xl text-center border border-black/5"><p class="text-[10px] font-bold">Endpoint Security</p><p class="text-[8px] text-slate-500 uppercase">Cisco · set/2024</p></div>
-      <div class="p-4 bg-white dark:bg-white/5 rounded-xl text-center border border-black/5"><p class="text-[10px] font-bold">FIAP Cybersec</p><p class="text-[8px] text-slate-500 uppercase">mai/2025</p></div>
-      <div class="p-4 bg-white dark:bg-white/5 rounded-xl text-center border border-black/5"><p class="text-[10px] font-bold">Bradesco LGPD</p><p class="text-[8px] text-slate-500 uppercase">abr/2024</p></div>
-      <div class="p-4 bg-white dark:bg-white/5 rounded-xl text-center border border-black/5"><p class="text-[10px] font-bold">SQL & SQLite</p><p class="text-[8px] text-slate-500 uppercase">Alura · mar/2024</p></div>
-      <div class="p-4 bg-white dark:bg-white/5 rounded-xl text-center border border-black/5"><p class="text-[10px] font-bold">Infra TI</p><p class="text-[8px] text-slate-500 uppercase">FIAP · dez/2022</p></div>
-      <div class="p-4 bg-white dark:bg-white/5 rounded-xl text-center border border-black/5"><p class="text-[10px] font-bold">SAP Activate</p><p class="text-[8px] text-slate-500 uppercase">jul/2024</p></div>
-      <div class="p-4 bg-white dark:bg-white/5 rounded-xl text-center border border-black/5"><p class="text-[10px] font-bold">SAP Geral</p><p class="text-[8px] text-slate-500 uppercase">Alura · jul/2024</p></div>
-      <div class="p-4 bg-white dark:bg-white/5 rounded-xl text-center border border-black/5"><p class="text-[10px] font-bold">Blip Academy IA</p><p class="text-[8px] text-slate-500 uppercase">mar/2025</p></div>
-      <div class="p-4 bg-white dark:bg-white/5 rounded-xl text-center border border-black/5"><p class="text-[10px] font-bold">Data Science</p><p class="text-[8px] text-slate-500 uppercase">DS Academy</p></div>
-      <div class="p-4 bg-white dark:bg-white/5 rounded-xl text-center border border-black/5"><p class="text-[10px] font-bold">Looker Studio</p><p class="text-[8px] text-slate-500 uppercase">Alura · abr/2024</p></div>
-      <div class="p-4 bg-white dark:bg-white/5 rounded-xl text-center border border-black/5"><p class="text-[10px] font-bold">Lógica de Prog.</p><p class="text-[8px] text-slate-500 uppercase">Certificate</p></div>
+      <div class="p-4 bg-white dark:bg-white/5 rounded-xl text-center border border-slate-200 dark:border-white/5 shadow-sm"><p class="text-[10px] font-bold text-light-text dark:text-white">Cisco Cybersecurity</p><p class="text-[8px] text-slate-500 uppercase">dez/2024</p></div>
+      <div class="p-4 bg-white dark:bg-white/5 rounded-xl text-center border border-slate-200 dark:border-white/5 shadow-sm"><p class="text-[10px] font-bold text-light-text dark:text-white">Endpoint Security</p><p class="text-[8px] text-slate-500 uppercase">Cisco · set/2024</p></div>
+      <div class="p-4 bg-white dark:bg-white/5 rounded-xl text-center border border-slate-200 dark:border-white/5 shadow-sm"><p class="text-[10px] font-bold text-light-text dark:text-white">FIAP Cybersec</p><p class="text-[8px] text-slate-500 uppercase">mai/2025</p></div>
+      <div class="p-4 bg-white dark:bg-white/5 rounded-xl text-center border border-slate-200 dark:border-white/5 shadow-sm"><p class="text-[10px] font-bold text-light-text dark:text-white">Bradesco LGPD</p><p class="text-[8px] text-slate-500 uppercase">abr/2024</p></div>
+      <div class="p-4 bg-white dark:bg-white/5 rounded-xl text-center border border-slate-200 dark:border-white/5 shadow-sm"><p class="text-[10px] font-bold text-light-text dark:text-white">SQL & SQLite</p><p class="text-[8px] text-slate-500 uppercase">Alura · mar/2024</p></div>
+      <div class="p-4 bg-white dark:bg-white/5 rounded-xl text-center border border-slate-200 dark:border-white/5 shadow-sm"><p class="text-[10px] font-bold text-light-text dark:text-white">Infra TI</p><p class="text-[8px] text-slate-500 uppercase">FIAP · dez/2022</p></div>
+      <div class="p-4 bg-white dark:bg-white/5 rounded-xl text-center border border-slate-200 dark:border-white/5 shadow-sm"><p class="text-[10px] font-bold text-light-text dark:text-white">SAP Activate</p><p class="text-[8px] text-slate-500 uppercase">jul/2024</p></div>
+      <div class="p-4 bg-white dark:bg-white/5 rounded-xl text-center border border-slate-200 dark:border-white/5 shadow-sm"><p class="text-[10px] font-bold text-light-text dark:text-white">SAP Geral</p><p class="text-[8px] text-slate-500 uppercase">Alura · jul/2024</p></div>
+      <div class="p-4 bg-white dark:bg-white/5 rounded-xl text-center border border-slate-200 dark:border-white/5 shadow-sm"><p class="text-[10px] font-bold text-light-text dark:text-white">Blip Academy IA</p><p class="text-[8px] text-slate-500 uppercase">mar/2025</p></div>
+      <div class="p-4 bg-white dark:bg-white/5 rounded-xl text-center border border-slate-200 dark:border-white/5 shadow-sm"><p class="text-[10px] font-bold text-light-text dark:text-white">Data Science</p><p class="text-[8px] text-slate-500 uppercase">DS Academy</p></div>
+      <div class="p-4 bg-white dark:bg-white/5 rounded-xl text-center border border-slate-200 dark:border-white/5 shadow-sm"><p class="text-[10px] font-bold text-light-text dark:text-white">Looker Studio</p><p class="text-[8px] text-slate-500 uppercase">Alura · abr/2024</p></div>
+      <div class="p-4 bg-white dark:bg-white/5 rounded-xl text-center border border-slate-200 dark:border-white/5 shadow-sm"><p class="text-[10px] font-bold text-light-text dark:text-white">Lógica de Prog.</p><p class="text-[8px] text-slate-500 uppercase">Certificate</p></div>
     </div>
   </div>
 </section>
